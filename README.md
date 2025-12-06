@@ -1,1 +1,1 @@
-# Group Capstone likay sa Siraulo
+# Group Capstone = Winstone / siraulo
