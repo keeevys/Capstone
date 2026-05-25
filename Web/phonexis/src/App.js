@@ -1,25 +1,90 @@
-import logo from './logo.svg';
+import { useState } from 'react';
 import './App.css';
+import Dashboard from './components/Dashboard';
+import Login from './components/Login';
+import Modules from './components/Modules';
+import Register from './components/Register';
+import AlphabetRecognition from './components/Modules/Alphabeth Recognition';
+import CVCWords from './components/Modules/CVC Words/CVCWords';
+import VowelsConsonant from './components/Modules/Vowels & Consonant/VowelsConsonant';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [activeView, setActiveView] = useState('login');
+  const [activeModule, setActiveModule] = useState('alphabet');
+
+  const renderView = () => {
+    if (!isAuthenticated) {
+      switch (activeView) {
+        case 'register':
+          return <Register onNavigate={setActiveView} onSuccess={() => setIsAuthenticated(true)} />;
+        case 'login':
+        default:
+          return <Login onNavigate={setActiveView} onSuccess={() => setIsAuthenticated(true)} />;
+      }
+    }
+
+    switch (activeView) {
+      case 'alphabet':
+        return (
+          <AlphabetRecognition
+            onComplete={() => setActiveView('dashboard')}
+            onBack={() => setActiveView('dashboard')}
+          />
+        );
+      case 'cvc':
+        return (
+          <CVCWords
+            onComplete={() => setActiveView('dashboard')}
+            onBack={() => setActiveView('dashboard')}
+          />
+        );
+      case 'vowels':
+        return (
+          <VowelsConsonant
+            onComplete={() => setActiveView('dashboard')}
+            onBack={() => setActiveView('dashboard')}
+          />
+        );
+      case 'modules':
+        return (
+          <Modules
+            activeModule={activeModule}
+            onNavigate={setActiveView}
+            onSelectModule={setActiveModule}
+            onLogout={() => {
+              setIsAuthenticated(false);
+              setActiveView('login');
+            }}
+          />
+        );
+      case 'dashboard':
+      default:
+        return (
+          <Dashboard
+            onNavigate={setActiveView}
+            onSelectModule={setActiveModule}
+            onLogout={() => {
+              setIsAuthenticated(false);
+              setActiveView('login');
+            }}
+          />
+        );
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="app-shell">
+        <div className="app-orb app-orb-left" aria-hidden="true" />
+        <div className="app-orb app-orb-right" aria-hidden="true" />
+
+        <main className="app-main app-auth-main app-login-main">{renderView()}</main>
+      </div>
+    );
+  }
+
+  return <div className="app-shell app-shell-authenticated">{renderView()}</div>;
 }
 
 export default App;

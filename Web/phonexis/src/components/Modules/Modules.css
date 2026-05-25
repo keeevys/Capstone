@@ -1,0 +1,142 @@
+.module-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.module-banner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.2rem 1.25rem;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #ffffff, #eef7ff);
+  border: 1px solid rgba(31, 54, 83, 0.08);
+  box-shadow: 0 18px 44px rgba(31, 54, 83, 0.1);
+}
+
+.module-banner h3 {
+  margin: 0;
+  font-size: clamp(1.3rem, 2vw, 2rem);
+  color: #13202f;
+}
+
+.module-banner p {
+  margin: 0.6rem 0 0;
+  max-width: 58ch;
+  color: rgba(38, 49, 63, 0.72);
+  line-height: 1.6;
+}
+
+.module-banner-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.module-banner-stats article,
+.module-objective {
+  border-radius: 20px;
+  padding: 0.9rem 1rem;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(31, 54, 83, 0.08);
+}
+
+.module-banner-stats span,
+.module-objective span {
+  display: block;
+  color: rgba(38, 49, 63, 0.62);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.module-banner-stats strong,
+.module-objective strong {
+  display: block;
+  margin-top: 0.45rem;
+  color: #13202f;
+}
+
+.module-strip {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.module-tab {
+  display: grid;
+  gap: 0.35rem;
+  text-align: left;
+  border-radius: 20px;
+  padding: 1rem;
+  border: 1px solid rgba(31, 54, 83, 0.08);
+  background: rgba(255, 255, 255, 0.9);
+  color: #13202f;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(31, 54, 83, 0.08);
+}
+
+.module-tab span {
+  color: rgba(38, 49, 63, 0.68);
+  line-height: 1.45;
+}
+
+.module-tab.active {
+  background: linear-gradient(180deg, rgba(46, 163, 255, 0.22), rgba(255, 255, 255, 0.96));
+  border-color: rgba(46, 163, 255, 0.35);
+}
+
+.module-content {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.module-stage {
+  border-radius: 24px;
+  border: 1px solid rgba(31, 54, 83, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  padding: 1.25rem;
+  box-shadow: 0 16px 36px rgba(31, 54, 83, 0.08);
+}
+
+.module-label {
+  margin: 0 0 0.45rem;
+  color: #1e7ff7;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.module-back {
+  border-radius: 999px;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(31, 54, 83, 0.12);
+  background: linear-gradient(135deg, #2ea3ff, #66ddff);
+  color: #0c2238;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.module-back.secondary,
+.module-back.inline {
+  margin-top: 0.75rem;
+}
+
+.module-back.secondary {
+  display: inline-flex;
+}
+
+.module-stage button {
+  font: inherit;
+}
+
+@media (max-width: 900px) {
+  .module-strip,
+  .module-content {
+    grid-template-columns: 1fr;
+  }
+}
