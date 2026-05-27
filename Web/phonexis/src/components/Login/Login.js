@@ -23,6 +23,7 @@ export default function Login({ onNavigate, onSuccess }) {
           email: data.user.email,
           firstName: data.user.user_metadata?.firstname || data.user.user_metadata?.firstName || '',
           lastName: data.user.user_metadata?.lastname || data.user.user_metadata?.lastName || '',
+          role: data.user.user_metadata?.role || 'student',
           user_metadata: data.user.user_metadata,
         });
         onNavigate('dashboard');
@@ -59,6 +60,10 @@ export default function Login({ onNavigate, onSuccess }) {
             <input type="password" name="password" aria-label="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </span>
         </label>
+
+        <button type="button" className="login-forgot-password" onClick={() => onNavigate('forgotpassword')}>
+          Forgot password?
+        </button>
 
         {error ? <p className="form-error">{error}</p> : null}
 
