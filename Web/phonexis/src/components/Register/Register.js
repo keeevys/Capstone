@@ -27,6 +27,7 @@ export default function Register({ onNavigate, onSuccess }) {
           data: {
             firstname,
             lastname,
+            role: 'student',
           },
         },
       });
@@ -41,6 +42,7 @@ export default function Register({ onNavigate, onSuccess }) {
           email: data.user.email,
           firstName: firstname,
           lastName: lastname,
+          role: 'student',
           user_metadata: data.user.user_metadata,
         });
         onNavigate('dashboard');
@@ -50,6 +52,7 @@ export default function Register({ onNavigate, onSuccess }) {
           email,
           firstName: firstname,
           lastName: lastname,
+          role: 'student',
         });
         onNavigate('dashboard');
       }

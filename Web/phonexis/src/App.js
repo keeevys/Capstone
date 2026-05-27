@@ -4,6 +4,9 @@ import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import Modules from './components/Modules';
 import Register from './components/Register';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
+import Profile from './components/Profile';
 import AlphabetRecognition from './components/Modules/AlphabetRecognition';
 import CVCWords from './components/Modules/CVCWords';
 import VowelsConsonant from './components/Modules/VowelsConsonant';
@@ -13,6 +16,7 @@ function App() {
   const [activeView, setActiveView] = useState('login');
   const [activeModule, setActiveModule] = useState('alphabet');
   const [currentUser, setCurrentUser] = useState(null);
+  const [resetEmail, setResetEmail] = useState(null);
 
   const handleAuthSuccess = (userProfile) => {
     if (userProfile) {
@@ -27,6 +31,18 @@ function App() {
       switch (activeView) {
         case 'register':
           return <Register onNavigate={setActiveView} onSuccess={handleAuthSuccess} />;
+        case 'forgotpassword':
+          return (
+            <ForgotPassword 
+              onNavigate={setActiveView} 
+              onEmailSubmit={(email) => {
+                setResetEmail(email);
+                setActiveView('reset');
+              }} 
+            />
+          );
+        case 'reset':
+          return <ResetPassword onNavigate={setActiveView} email={resetEmail} />;
         case 'login':
         default:
           return <Login onNavigate={setActiveView} onSuccess={handleAuthSuccess} />;
@@ -63,6 +79,18 @@ function App() {
             onSelectModule={setActiveModule}
             onLogout={() => {
               setIsAuthenticated(false);
+              setActiveView('login');
+            }}
+          />
+        );
+      case 'profile':
+        return (
+          <Profile
+            onNavigate={setActiveView}
+            user={currentUser}
+            onLogout={() => {
+              setIsAuthenticated(false);
+              setCurrentUser(null);
               setActiveView('login');
             }}
           />
