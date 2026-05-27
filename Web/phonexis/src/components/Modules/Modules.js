@@ -1,7 +1,7 @@
 import './Modules.css';
-import AlphabetRecognition from './Alphabeth Recognition';
-import CVCWords from './CVC Words/CVCWords';
-import VowelsConsonant from './Vowels & Consonant/VowelsConsonant';
+import AlphabetRecognition from './AlphabetRecognition';
+import CVCWords from './CVCWords';
+import VowelsConsonant from './VowelsConsonant';
 
 const moduleCards = {
   alphabet: {

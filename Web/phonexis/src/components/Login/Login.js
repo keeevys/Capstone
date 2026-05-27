@@ -1,10 +1,35 @@
 import './Login.css';
+import { useState } from 'react';
+import { supabase } from '../../lib/supabaseClient';
 
 export default function Login({ onNavigate, onSuccess }) {
-  const handleSubmit = (event) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    onSuccess();
-    onNavigate('dashboard');
+    setError(null);
+
+    try {
+      const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password });
+      if (authError) {
+        setError(authError.message || 'Login failed');
+        return;
+      }
+
+      if (data?.user) {
+        onSuccess({
+          email: data.user.email,
+          firstName: data.user.user_metadata?.firstname || data.user.user_metadata?.firstName || '',
+          lastName: data.user.user_metadata?.lastname || data.user.user_metadata?.lastName || '',
+          user_metadata: data.user.user_metadata,
+        });
+        onNavigate('dashboard');
+      }
+    } catch (err) {
+      setError(err.message || 'Login error');
+    }
   };
 
   return (
@@ -23,7 +48,7 @@ export default function Login({ onNavigate, onSuccess }) {
           <span className="login-field-label">Email *</span>
           <span className="login-field-box">
             <span className="login-field-icon" aria-hidden="true">✉️</span>
-            <input type="email" name="email" aria-label="Email" />
+            <input type="email" name="email" aria-label="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </span>
         </label>
 
@@ -31,9 +56,11 @@ export default function Login({ onNavigate, onSuccess }) {
           <span className="login-field-label">Password *</span>
           <span className="login-field-box">
             <span className="login-field-icon" aria-hidden="true">🔒</span>
-            <input type="password" name="password" aria-label="Password" />
+            <input type="password" name="password" aria-label="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </span>
         </label>
+
+        {error ? <p className="form-error">{error}</p> : null}
 
         <button type="submit" className="login-submit">
           SIGN IN
