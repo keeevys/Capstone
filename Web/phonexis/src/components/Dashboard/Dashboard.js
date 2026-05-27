@@ -52,9 +52,14 @@ export default function Dashboard({ onNavigate, onSelectModule, onLogout, user }
           </div>
         </div>
 
-        <button type="button" className="dashboard-logout" onClick={onLogout}>
-          ↪ LOGOUT
-        </button>
+        <div className="dashboard-topbar-actions">
+          <button type="button" className="dashboard-profile" onClick={() => onNavigate('profile')}>
+            👤 PROFILE
+          </button>
+          <button type="button" className="dashboard-logout" onClick={onLogout}>
+            ↪ LOGOUT
+          </button>
+        </div>
       </header>
 
       <section className="dashboard-progress-card" aria-label="Overall progress">
