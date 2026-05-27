@@ -4,23 +4,32 @@ import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import Modules from './components/Modules';
 import Register from './components/Register';
-import AlphabetRecognition from './components/Modules/Alphabeth Recognition';
-import CVCWords from './components/Modules/CVC Words/CVCWords';
-import VowelsConsonant from './components/Modules/Vowels & Consonant/VowelsConsonant';
+import AlphabetRecognition from './components/Modules/AlphabetRecognition';
+import CVCWords from './components/Modules/CVCWords';
+import VowelsConsonant from './components/Modules/VowelsConsonant';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeView, setActiveView] = useState('login');
   const [activeModule, setActiveModule] = useState('alphabet');
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const handleAuthSuccess = (userProfile) => {
+    if (userProfile) {
+      setCurrentUser(userProfile);
+    }
+
+    setIsAuthenticated(true);
+  };
 
   const renderView = () => {
     if (!isAuthenticated) {
       switch (activeView) {
         case 'register':
-          return <Register onNavigate={setActiveView} onSuccess={() => setIsAuthenticated(true)} />;
+          return <Register onNavigate={setActiveView} onSuccess={handleAuthSuccess} />;
         case 'login':
         default:
-          return <Login onNavigate={setActiveView} onSuccess={() => setIsAuthenticated(true)} />;
+          return <Login onNavigate={setActiveView} onSuccess={handleAuthSuccess} />;
       }
     }
 
@@ -64,8 +73,10 @@ function App() {
           <Dashboard
             onNavigate={setActiveView}
             onSelectModule={setActiveModule}
+            user={currentUser}
             onLogout={() => {
               setIsAuthenticated(false);
+              setCurrentUser(null);
               setActiveView('login');
             }}
           />
