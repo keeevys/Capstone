@@ -2,40 +2,41 @@
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  padding: 2rem;
-  color: #1c2430;
+  padding: 2.5rem 2rem;
+  color: #1a1a2e;
+  backdrop-filter: blur(10px);
 }
 
 .app-orb {
   position: absolute;
   inset: auto;
   border-radius: 999px;
-  filter: blur(28px);
-  opacity: 0.45;
+  filter: blur(60px);
+  opacity: 0.3;
   pointer-events: none;
 }
 
 .app-orb-left {
-  top: -4rem;
-  left: -3rem;
-  width: 16rem;
-  height: 16rem;
-  background: rgba(255, 158, 77, 0.25);
+  top: -6rem;
+  left: -4rem;
+  width: 20rem;
+  height: 20rem;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .app-orb-right {
-  right: -2rem;
-  top: 12rem;
-  width: 20rem;
-  height: 20rem;
-  background: rgba(85, 160, 255, 0.2);
+  right: -3rem;
+  top: 15rem;
+  width: 25rem;
+  height: 25rem;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .app-header,
 .app-main {
   position: relative;
   z-index: 1;
-  width: min(1200px, 100%);
+  width: min(1300px, 100%);
   margin: 0 auto;
 }
 
@@ -45,7 +46,34 @@
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  margin-bottom: 1.75rem;
+  margin-bottom: 2rem;
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.app-main {
+  animation: fadeIn 0.6s ease-out;
 }
 
 .app-brand {

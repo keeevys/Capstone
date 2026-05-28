@@ -1,10 +1,25 @@
 .vowels-consonant-detail {
   min-height: 38rem;
-  padding: 1rem 1rem 1.2rem;
-  border-radius: 16px;
-  background: #dfe7ff;
+  padding: 2rem;
+  border-radius: 2rem;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(240, 147, 251, 0.05));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(102, 126, 234, 0.15);
   display: grid;
-  gap: 1rem;
+  gap: 1.5rem;
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.1);
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .vowels-topbar {
@@ -23,39 +38,57 @@
 
 .mode-pill {
   appearance: none;
-  border: 1px solid rgba(75, 138, 255, 0.24);
-  background: rgba(255, 255, 255, 0.72);
-  color: #3d5fa8;
-  border-radius: 999px;
-  padding: 0.55rem 1rem;
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  background: rgba(255, 255, 255, 0.95);
+  color: #667eea;
+  border-radius: 1.2rem;
+  padding: 0.75rem 1.5rem;
   font: inherit;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.03em;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   cursor: pointer;
   flex: 1 1 0;
   min-width: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.mode-pill:hover {
+  border-color: #667eea;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
 }
 
 .mode-pill.active {
   color: #ffffff;
-  background: linear-gradient(90deg, #1c79ef, #ff565c);
-  border-color: transparent;
-  box-shadow: 0 10px 22px rgba(71, 110, 255, 0.18);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #764ba2;
+  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.3);
 }
 
 .vowels-back {
   appearance: none;
-  border: 1px solid rgba(75, 138, 255, 0.3);
-  background: rgba(255, 255, 255, 0.82);
-  color: #4f86ee;
-  border-radius: 0.2rem;
-  padding: 0.5rem 0.9rem;
+  border: 2px solid #667eea;
+  background: rgba(255, 255, 255, 0.95);
+  color: #667eea;
+  border-radius: 1rem;
+  padding: 0.75rem 1.5rem;
   font: inherit;
-  font-size: 0.78rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.5px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  text-transform: uppercase;
+}
+
+.vowels-back:hover {
+  background: #ffffff;
+  border-color: #764ba2;
+  color: #764ba2;
+  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.2);
+  transform: translateY(-2px);
 }
 
 .vowels-picker {
@@ -69,24 +102,32 @@
 
 .vowel-tile {
   appearance: none;
-  border: 0;
-  width: 5.25rem;
-  min-height: 6.6rem;
-  border-radius: 0.9rem;
-  background: #f5f6fa;
-  color: #22262f;
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  width: 5.75rem;
+  min-height: 7.2rem;
+  border-radius: 1.2rem;
+  background: rgba(255, 255, 255, 0.95);
+  color: #667eea;
   display: grid;
   align-content: center;
   justify-items: center;
-  gap: 0.15rem;
+  gap: 0.3rem;
   cursor: pointer;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.vowel-tile:hover {
+  border-color: #667eea;
+  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.15);
+  transform: translateY(-4px);
 }
 
 .vowel-tile.active {
   color: #ffffff;
-  background: linear-gradient(180deg, #ff565c, #ff2129);
-  box-shadow: 0 12px 24px rgba(255, 45, 55, 0.18);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #764ba2;
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
 }
 
 .vowel-tile-letter {
@@ -104,14 +145,27 @@
   width: min(100%, 37rem);
   display: grid;
   justify-items: center;
-  gap: 0.85rem;
+  gap: 1rem;
   min-height: 18rem;
   margin: 0 auto;
-  padding: 1.6rem 1.6rem 1.35rem;
-  border-radius: 0.35rem;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(89, 117, 174, 0.12);
-  box-shadow: 0 12px 26px rgba(80, 103, 151, 0.08);
+  padding: 2rem;
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(102, 126, 234, 0.15);
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.1);
+  animation: fadeInUp 0.5s ease-out 0.2s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .vowels-letter {
@@ -155,16 +209,23 @@
 .vowels-listen {
   appearance: none;
   border: 0;
-  border-radius: 0.25rem;
-  padding: 0.72rem 1.15rem;
-  background: linear-gradient(90deg, #11b96f, #1c79ef);
+  border-radius: 1rem;
+  padding: 0.85rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #ffffff;
   font: inherit;
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  box-shadow: 0 10px 22px rgba(21, 128, 210, 0.18);
+  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.vowels-listen:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
 }
 
 .game-feedback {
@@ -183,12 +244,14 @@
 
 .activity-card {
   width: min(100%, 37rem);
-  border-radius: 0.35rem;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(89, 117, 174, 0.12);
-  box-shadow: 0 12px 26px rgba(80, 103, 151, 0.08);
-  padding: 1.8rem 1.6rem 1.35rem;
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(102, 126, 234, 0.15);
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.1);
+  padding: 2rem;
   text-align: center;
+  animation: fadeInUp 0.5s ease-out 0.2s both;
 }
 
 .activity-header {
@@ -237,15 +300,15 @@
 .activity-letter-box {
   display: grid;
   place-items: center;
-  width: 4.2rem;
-  height: 4.2rem;
-  border-radius: 0.15rem;
-  border: 2px solid #4f8ef7;
-  background: #f7fbff;
-  color: #2a2d34;
-  font-size: 1.7rem;
-  font-weight: 400;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 1rem;
+  border: 2px solid #667eea;
+  background: rgba(255, 255, 255, 0.95);
+  color: #667eea;
+  font-size: 1.8rem;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
 }
 
 .activity-letter-box span {
@@ -255,16 +318,23 @@
 .activity-check {
   appearance: none;
   border: 0;
-  border-radius: 0.25rem;
-  padding: 0.8rem 1.05rem;
-  background: linear-gradient(90deg, #23c16b, #1c79ef);
+  border-radius: 1rem;
+  padding: 0.85rem 1.5rem;
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
   color: #ffffff;
   font: inherit;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.03em;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  box-shadow: 0 10px 22px rgba(43, 153, 106, 0.18);
+  box-shadow: 0 12px 30px rgba(16, 185, 129, 0.3);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.activity-check:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
 }
 
 .activity-choice-row {
@@ -277,21 +347,29 @@
 
 .activity-choice {
   appearance: none;
-  width: 2.4rem;
-  height: 2.4rem;
-  border: 1px solid rgba(79, 142, 247, 0.24);
-  border-radius: 0.4rem;
-  background: rgba(255, 255, 255, 0.92);
-  color: #30415c;
+  width: 2.8rem;
+  height: 2.8rem;
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.95);
+  color: #667eea;
   font: inherit;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.activity-choice:hover {
+  border-color: #667eea;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
 }
 
 .activity-choice.active {
-  border-color: #4f8ef7;
-  background: #eaf2ff;
-  color: #2e62d0;
+  border-color: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
 }
 
 .activity-result {
@@ -314,16 +392,23 @@
 .activity-next {
   appearance: none;
   border: 0;
-  border-radius: 0.25rem;
-  padding: 0.8rem 1.15rem;
-  background: linear-gradient(90deg, #1c79ef, #745cff);
+  border-radius: 1rem;
+  padding: 0.85rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #ffffff;
   font: inherit;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  box-shadow: 0 10px 22px rgba(71, 110, 255, 0.18);
+  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.activity-next:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
 }
 
 .activity-dots {
