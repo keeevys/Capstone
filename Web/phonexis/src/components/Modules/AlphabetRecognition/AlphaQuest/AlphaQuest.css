@@ -1,0 +1,623 @@
+.alpha-quest-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.95));
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  animation: fadeIn 0.5s ease-out;
+  padding: 1rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Menu Screen */
+.alpha-quest-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  text-align: center;
+  max-width: 600px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 3px solid #d4af37;
+  border-radius: 2rem;
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.3), 0 20px 60px rgba(0, 0, 0, 0.8);
+  animation: slideUp 0.5s ease-out;
+}
+
+.alpha-quest-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.alpha-quest-title h1 {
+  margin: 0;
+  font-size: 3rem;
+  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.alpha-quest-icon {
+  font-size: 2.5rem;
+  display: inline-block;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+.alpha-quest-icon:last-child {
+  animation-delay: 0.3s;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.alpha-quest-subtitle {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #d4af37;
+  margin-bottom: 1rem;
+}
+
+.alpha-quest-difficulty-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.alpha-quest-difficulty-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border: 2px solid #d4af37;
+  border-radius: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.3), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.alpha-quest-difficulty-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.6), 0 8px 20px rgba(212, 175, 55, 0.3);
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.beginner-btn {
+  border-color: #d4af37;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7));
+}
+
+.beginner-btn:hover {
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.intermediate-btn {
+  border-color: #d4af37;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7));
+}
+
+.intermediate-btn:hover {
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.endless-btn {
+  border-color: #d4af37;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7));
+}
+
+.endless-btn:hover {
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.difficulty-icon {
+  font-size: 1.8rem;
+}
+
+.difficulty-name {
+  font-size: 1.1rem;
+  color: #d4af37;
+}
+
+.difficulty-desc {
+  font-size: 0.85rem;
+  color: #a89942;
+  font-weight: 500;
+}
+
+.alpha-quest-close-btn {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  color: #000000;
+  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 100%);
+  border: 2px solid #d4af37;
+  border-radius: 1rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.alpha-quest-close-btn:hover {
+  background: linear-gradient(135deg, #f0e68c 0%, #d4af37 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.8), 0 8px 20px rgba(212, 175, 55, 0.3);
+}
+
+/* Game Screen */
+.alpha-quest-game {
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 3px solid #d4af37;
+  border-radius: 2rem;
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.3), 0 20px 60px rgba(0, 0, 0, 0.8);
+  animation: slideUp 0.5s ease-out;
+}
+
+.alpha-quest-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.game-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.game-round {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #d4af37;
+}
+
+.game-difficulty {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #a89942;
+}
+
+.game-score {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #d4af37;
+}
+
+.alpha-quest-quit-btn {
+  padding: 0.5rem 1rem;
+  color: #000000;
+  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 100%);
+  border: 2px solid #d4af37;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+}
+
+.alpha-quest-quit-btn:hover {
+  background: linear-gradient(135deg, #f0e68c 0%, #d4af37 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+}
+
+/* Battle Layout */
+.alpha-quest-battle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  justify-items: center;
+  padding: 2rem 0;
+  border-top: 2px solid #d4af37;
+  border-bottom: 2px solid #d4af37;
+}
+
+.alpha-quest-player-side,
+.alpha-quest-boss-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.player-emoji,
+.boss-emoji {
+  font-size: 4rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+.boss-emoji {
+  animation-delay: 0.5s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.boss-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 71, 87, 0.1));
+  border: 2px solid rgba(255, 107, 107, 0.3);
+  border-radius: 1rem;
+  min-width: 150px;
+}
+
+.player-health,
+.boss-health {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.heart {
+  font-size: 1.5rem;
+  display: inline-block;
+  transition: all 0.2s ease;
+  filter: grayscale(0%);
+}
+
+.heart.empty {
+  filter: grayscale(100%);
+  opacity: 0.3;
+}
+
+/* Feedback */
+.alpha-quest-feedback {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #d4af37;
+  min-height: 1.5rem;
+  animation: pop 0.5s ease-out;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.alpha-quest-streak {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #f59e0b;
+  min-height: 1.5rem;
+}
+
+/* Controls */
+.alpha-quest-controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.alpha-quest-listen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  color: #000000;
+  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 100%);
+  border: 2px solid #d4af37;
+  border-radius: 1rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.alpha-quest-listen-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #f0e68c 0%, #d4af37 100%);
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.8), 0 8px 20px rgba(212, 175, 55, 0.3);
+}
+
+/* Keyboard Hint */
+.alpha-quest-keyboard-hint {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #a89942;
+  font-style: italic;
+}
+
+/* Letter Buttons */
+.alpha-quest-letter-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.alpha-quest-letter-btn {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 2px solid #d4af37;
+  background: rgba(0, 0, 0, 0.6);
+  color: #d4af37;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3), 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.alpha-quest-letter-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.6), 0 6px 12px rgba(212, 175, 55, 0.2);
+}
+
+/* Game Over Screen */
+.alpha-quest-game-over {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.game-over-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 3px solid #d4af37;
+  border-radius: 2rem;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.3), 0 20px 60px rgba(0, 0, 0, 0.8);
+  max-width: 400px;
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.game-over-modal.defeat {
+  border: 3px solid #ff6b6b;
+  background: linear-gradient(135deg, #2a1a1a 0%, #3e1616 100%);
+}
+
+.game-over-modal.victory {
+  border: 3px solid #d4af37;
+  background: linear-gradient(135deg, #1a2a1a 0%, #163e1a 100%);
+}
+
+.game-over-emoji {
+  font-size: 4rem;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-10px);
+  }
+  75% {
+    transform: translateX(10px);
+  }
+}
+
+.game-over-title {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #d4af37;
+}
+
+.game-over-stats {
+  margin: 0;
+  color: #a89942;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.game-over-buttons {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.game-over-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.75rem 1.5rem;
+  border: 0;
+  border-radius: 0.8rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.game-over-btn.play-again {
+  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 100%);
+  color: #000000;
+  border: 2px solid #d4af37;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.game-over-btn.play-again:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #f0e68c 0%, #d4af37 100%);
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.8), 0 8px 20px rgba(212, 175, 55, 0.3);
+}
+
+.game-over-btn.back-to-alpha {
+  background: rgba(212, 175, 55, 0.1);
+  color: #d4af37;
+  border: 2px solid #d4af37;
+}
+
+.game-over-btn.back-to-alpha:hover {
+  background: rgba(212, 175, 55, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .alpha-quest-game {
+    padding: 1.5rem;
+  }
+
+  .alpha-quest-battle {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .player-emoji,
+  .boss-emoji {
+    font-size: 3rem;
+  }
+
+  .alpha-quest-letter-buttons {
+    max-width: 100%;
+    grid-template-columns: repeat(auto-fit, minmax(35px, 1fr));
+  }
+
+  .alpha-quest-difficulty-buttons {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .alpha-quest-title h1 {
+    font-size: 2rem;
+  }
+
+  .alpha-quest-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .alpha-quest-menu {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .alpha-quest-game {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .alpha-quest-title {
+    gap: 0.5rem;
+  }
+
+  .alpha-quest-title h1 {
+    font-size: 1.5rem;
+  }
+
+  .alpha-quest-icon {
+    font-size: 2rem;
+  }
+
+  .player-emoji,
+  .boss-emoji {
+    font-size: 2.5rem;
+  }
+
+  .heart {
+    font-size: 1.2rem;
+  }
+
+  .game-over-modal {
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+
+  .game-over-emoji {
+    font-size: 3rem;
+  }
+
+  .game-over-title {
+    font-size: 1.3rem;
+  }
+}
