@@ -36,10 +36,12 @@ export default function AlphabetRecognition({ onComplete, onBack }) {
   const [mode, setMode] = useState('learning'); // 'learning' or 'pretest'
   const [difficulty, setDifficulty] = useState(null); // 'easy', 'medium', 'hard'
   const [currentPretestLetter, setCurrentPretestLetter] = useState(null);
+  const [hasListened, setHasListened] = useState(false);
   const [pretestScore, setPretestScore] = useState(0);
   const [totalAttempts, setTotalAttempts] = useState(0); // Track total attempts (correct + wrong)
   const [correctLetters, setCorrectLetters] = useState([]); // Track correctly identified letters
-  const [wrongTiles, setWrongTiles] = useState([]); // Track tiles guessed wrongly (for styling)
+  const [wrongPromptLetters, setWrongPromptLetters] = useState([]); // Track spoken letters answered incorrectly
+  const [completedPromptLetters, setCompletedPromptLetters] = useState([]); // Track spoken letters that should not be replayed
 
   const letters = useMemo(() => alphabet.map((item) => item.letter), []);
   const selectedIndex = letters.indexOf(selectedLetter.letter);
@@ -77,25 +79,54 @@ export default function AlphabetRecognition({ onComplete, onBack }) {
     return ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
   };
 
-  const startPretest = (diff) => {
+  const getMaxAttempts = (diff) => {
+    if (diff === 'medium') return 8;
+    if (diff === 'hard') return 5;
+    return 10;
+  };
+
+  const getAvailablePretestLetters = (
+    range,
+    correct = correctLetters,
+    wrong = wrongPromptLetters,
+    excludedLetters = completedPromptLetters
+  ) => {
+    const excluded = new Set(excludedLetters);
+    return range.filter((letter) => !correct.includes(letter) && !wrong.includes(letter) && !excluded.has(letter));
+  };
+
+  const pickNextPretestLetter = (range, correct = correctLetters, wrong = wrongPromptLetters, excludedLetters = []) => {
+    const availableLetters = getAvailablePretestLetters(range, correct, wrong, excludedLetters);
+
+    if (availableLetters.length > 0) {
+      return availableLetters[Math.floor(Math.random() * availableLetters.length)];
+    }
+
+    const fallbackLetters = range.filter((letter) => !correct.includes(letter) && !wrong.includes(letter));
+    if (fallbackLetters.length > 0) {
+      return fallbackLetters[Math.floor(Math.random() * fallbackLetters.length)];
+    }
+
+    return null;
+  };
+
+  const resetPretestState = (diff) => {
     setMode('pretest');
     setDifficulty(diff);
     setPretestScore(0);
     setTotalAttempts(0);
     setCorrectLetters([]);
-    setWrongTiles([]);
-    selectNewPretestLetter(getDifficultyRange(diff));
+    setWrongPromptLetters([]);
+    setCompletedPromptLetters([]);
+    setHasListened(false);
+
+    const range = getDifficultyRange(diff);
+    setCurrentPretestLetter(pickNextPretestLetter(range, [], [], []));
+    setFeedback('Press listen to hear the first letter.');
   };
 
-  const selectNewPretestLetter = (range) => {
-    // Filter out already correct letters (they won't show again)
-    const availableLetters = range.filter((letter) => !correctLetters.includes(letter));
-    
-    if (availableLetters.length > 0) {
-      const randomLetter = availableLetters[Math.floor(Math.random() * availableLetters.length)];
-      setCurrentPretestLetter(randomLetter);
-      playPretestAudio(randomLetter);
-    }
+  const startPretest = (diff) => {
+    resetPretestState(diff);
   };
 
   const playPretestAudio = (letter) => {
@@ -105,67 +136,54 @@ export default function AlphabetRecognition({ onComplete, onBack }) {
       utterance.rate = 0.9;
       utterance.pitch = 1;
       window.speechSynthesis.speak(utterance);
-      setFeedback(`Listen to the letter...`);
-    }
-  };
-
-  const playRandomPretestLetter = (range) => {
-    // Don't replay if the current audio letter was already guessed correctly (GREEN)
-    if (currentPretestLetter && !correctLetters.includes(currentPretestLetter)) {
-      playPretestAudio(currentPretestLetter);
+      setFeedback('Listen to the letter...');
     }
   };
 
   const handlePretestAnswer = (letter) => {
-    // Stop if pretest is already complete (10 attempts made)
-    if (totalAttempts >= 10) {
+    if (!hasListened || !currentPretestLetter) {
+      return;
+    }
+
+    const range = getDifficultyRange(difficulty);
+    const maxAttempts = getMaxAttempts(difficulty);
+    const currentLetter = currentPretestLetter;
+
+    if (completedPromptLetters.includes(letter)) {
       return;
     }
 
     const newTotalAttempts = totalAttempts + 1;
-    const audioLetter = currentPretestLetter; // The letter that was spoken
+    const isCorrect = letter === currentLetter;
+    const nextCorrectLetters = isCorrect ? [...correctLetters, letter] : correctLetters;
+    const nextScore = isCorrect ? pretestScore + 1 : pretestScore;
+    const nextWrongPromptLetters = isCorrect ? wrongPromptLetters : [...wrongPromptLetters, currentLetter];
+    const nextCompletedPromptLetters = [...new Set([...completedPromptLetters, currentLetter])];
+    const nextLetter = pickNextPretestLetter(range, nextCorrectLetters, nextWrongPromptLetters, nextCompletedPromptLetters);
 
-    if (letter === audioLetter) {
-      // Correct answer - audio letter turns GREEN
-      const newCorrectLetters = [...correctLetters, audioLetter];
-      setCorrectLetters(newCorrectLetters);
-      setPretestScore((prev) => prev + 1);
-      setTotalAttempts(newTotalAttempts);
-      setFeedback(`✓ Correct! That's ${audioLetter}!`);
+    setCorrectLetters(nextCorrectLetters);
+    setWrongPromptLetters(nextWrongPromptLetters);
+    setCompletedPromptLetters(nextCompletedPromptLetters);
+    setPretestScore(nextScore);
+    setTotalAttempts(newTotalAttempts);
+    setFeedback(isCorrect ? `✓ Correct! ${letter} is green.` : `✗ Wrong! ${currentLetter} is red.`);
 
-      // Check if this is the 10th attempt
-      if (newTotalAttempts >= 10) {
-        setTimeout(() => {
-          setFeedback(`Pretest Complete! Score: ${newCorrectLetters.length}/10`);
-          setMode('learning');
-          setCurrentPretestLetter(null);
-        }, 1500);
-      } else {
-        // Move to next letter after 1 second
-        setTimeout(() => {
-          selectNewPretestLetter(getDifficultyRange(difficulty));
-        }, 1000);
-      }
-    } else {
-      // Wrong answer - audio letter turns RED
-      setWrongTiles((prev) => [...prev, audioLetter]);
-      setTotalAttempts(newTotalAttempts);
-      setFeedback(`✗ Wrong! That's not ${audioLetter}.`);
-
-      // Check if this is the 10th attempt
-      if (newTotalAttempts >= 10) {
-        setTimeout(() => {
-          setFeedback(`Pretest Complete! Score: ${pretestScore}/10`);
-          setMode('learning');
-          setCurrentPretestLetter(null);
-        }, 1500);
-      } else {
-        // Move to next letter after 1 second
-        setTimeout(() => {
-          selectNewPretestLetter(getDifficultyRange(difficulty));
-        }, 1000);
-      }
+    if (newTotalAttempts >= maxAttempts || !nextLetter) {
+      setTimeout(() => {
+        setFeedback(`Pretest Complete! Score: ${nextScore}/${maxAttempts}`);
+        setMode('learning');
+        setCurrentPretestLetter(null);
+        setHasListened(false);
+      }, 1500);
+      return;
     }
+
+    setCurrentPretestLetter(nextLetter);
+    setHasListened(false);
+
+    setTimeout(() => {
+      setFeedback('Press listen to hear the next letter.');
+    }, 1000);
   };
 
   return (
@@ -258,7 +276,7 @@ export default function AlphabetRecognition({ onComplete, onBack }) {
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h2 style={{ color: '#667eea', marginBottom: '0.5rem', fontSize: '1.8rem' }}>Listen and Identify</h2>
             <p style={{ color: '#666', fontSize: '1.1rem', marginBottom: '1rem' }}>
-              Score: {pretestScore}/10 (Attempt {totalAttempts}/10)
+              Score: {pretestScore}/{getMaxAttempts(difficulty)} (Attempt {totalAttempts}/{getMaxAttempts(difficulty)})
             </p>
           </div>
 
@@ -266,11 +284,18 @@ export default function AlphabetRecognition({ onComplete, onBack }) {
             <button
               type="button"
               className="alphabet-speak-button"
-              onClick={() => playRandomPretestLetter(getDifficultyRange(difficulty))}
-              disabled={correctLetters.includes(currentPretestLetter)}
-              style={{ opacity: correctLetters.includes(currentPretestLetter) ? 0.5 : 1, cursor: correctLetters.includes(currentPretestLetter) ? 'not-allowed' : 'pointer' }}
+              onClick={() => {
+                if (!currentPretestLetter) {
+                  return;
+                }
+
+                setHasListened(true);
+                playPretestAudio(currentPretestLetter);
+              }}
+              disabled={!currentPretestLetter}
+              style={{ opacity: !currentPretestLetter ? 0.5 : 1, cursor: !currentPretestLetter ? 'not-allowed' : 'pointer' }}
             >
-              🔊 Listen Again
+              🔊 Listen
             </button>
             <p className="game-feedback">{feedback}</p>
           </div>
@@ -283,16 +308,12 @@ export default function AlphabetRecognition({ onComplete, onBack }) {
                 className={
                   correctLetters.includes(letter)
                     ? 'letter-tile active'
-                    : wrongTiles.includes(letter)
+                      : wrongPromptLetters.includes(letter)
                     ? 'letter-tile wrong'
                     : 'letter-tile'
                 }
-                onClick={() => 
-                  !correctLetters.includes(letter) && 
-                  !wrongTiles.includes(letter) &&
-                  handlePretestAnswer(letter)
-                }
-                disabled={correctLetters.includes(letter) || wrongTiles.includes(letter)}
+                onClick={() => handlePretestAnswer(letter)}
+                disabled={!hasListened || completedPromptLetters.includes(letter)}
               >
                 {letter}
               </button>
