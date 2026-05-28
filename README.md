@@ -1,1 +1,1 @@
-# Group Capstone = Winstone / siraulo
+# Group Capstone = Phonexis
