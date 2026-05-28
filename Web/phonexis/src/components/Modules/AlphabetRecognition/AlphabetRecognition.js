@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import './AlphabetRecognition.css';
+import AlphaQuest from './AlphaQuest';
 
 const alphabet = [
   { letter: 'A', word: 'Apple', icon: '🍎' },
@@ -42,6 +43,7 @@ export default function AlphabetRecognition({ onComplete, onBack }) {
   const [correctLetters, setCorrectLetters] = useState([]); // Track correctly identified letters
   const [wrongPromptLetters, setWrongPromptLetters] = useState([]); // Track spoken letters answered incorrectly
   const [completedPromptLetters, setCompletedPromptLetters] = useState([]); // Track spoken letters that should not be replayed
+  const [showAlphaQuest, setShowAlphaQuest] = useState(false); // Track if AlphaQuest is active
 
   const letters = useMemo(() => alphabet.map((item) => item.letter), []);
   const selectedIndex = letters.indexOf(selectedLetter.letter);
@@ -270,6 +272,17 @@ export default function AlphabetRecognition({ onComplete, onBack }) {
               🔴 HARD (A-Z)
             </button>
           </div>
+
+          <div style={{ marginTop: '2rem' }}>
+            <button
+              type="button"
+              className="alphabet-complete-button"
+              onClick={() => setShowAlphaQuest(true)}
+              style={{ padding: '1.5rem', fontSize: '1.1rem', fontWeight: 700, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', width: '100%', maxWidth: '800px' }}
+            >
+              ⚔️ AlphaQuest - Battle Game
+            </button>
+          </div>
         </div>
       ) : mode === 'pretest' ? (
         <div className="alphabet-stage">
@@ -321,6 +334,10 @@ export default function AlphabetRecognition({ onComplete, onBack }) {
           </div>
         </div>
       ) : null}
+
+      {showAlphaQuest && (
+        <AlphaQuest onClose={() => setShowAlphaQuest(false)} />
+      )}
     </div>
   );
 }
