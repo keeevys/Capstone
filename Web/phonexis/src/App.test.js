@@ -4,6 +4,6 @@ import App from './App';
 test('renders the phonexis frontend shell', () => {
   render(<App />);
   expect(
-    screen.getByRole('heading', { name: /return to the learning workspace/i })
+    screen.getByRole('heading', { name: /phonics learning/i })
   ).toBeInTheDocument();
 });

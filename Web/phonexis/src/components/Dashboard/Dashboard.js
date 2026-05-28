@@ -27,13 +27,17 @@ const moduleCards = [
   },
 ];
 
-export default function Dashboard({ onNavigate, onSelectModule, onLogout }) {
+export default function Dashboard({ onNavigate, onSelectModule, onLogout, user }) {
   const openGame = (moduleKey) => {
     onSelectModule(moduleKey);
     onNavigate(moduleKey);
   };
 
   const overallProgress = 3;
+  const firstName = user?.firstName || user?.firstname || user?.user_metadata?.firstname || user?.user_metadata?.firstName || '';
+  const lastName = user?.lastName || user?.lastname || user?.user_metadata?.lastname || user?.user_metadata?.lastName || '';
+  const emailName = user?.email ? user.email.split('@')[0] : '';
+  const displayName = `${firstName} ${lastName}`.trim() || emailName || 'Learner';
 
   return (
     <section className="dashboard-shell">
@@ -43,14 +47,19 @@ export default function Dashboard({ onNavigate, onSelectModule, onLogout }) {
             <span>🎓</span>
           </div>
           <div>
-            <h2>Welcome, can dog!</h2>
+            <h2>Welcome, {displayName}!</h2>
             <p>Let&apos;s learn together</p>
           </div>
         </div>
 
-        <button type="button" className="dashboard-logout" onClick={onLogout}>
-          ↪ LOGOUT
-        </button>
+        <div className="dashboard-topbar-actions">
+          <button type="button" className="dashboard-profile" onClick={() => onNavigate('profile')}>
+            👤 PROFILE
+          </button>
+          <button type="button" className="dashboard-logout" onClick={onLogout}>
+            ↪ LOGOUT
+          </button>
+        </div>
       </header>
 
       <section className="dashboard-progress-card" aria-label="Overall progress">
