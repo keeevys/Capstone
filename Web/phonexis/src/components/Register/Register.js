@@ -1,6 +1,6 @@
 import './Register.css';
 import { useState } from 'react';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase, syncSupabaseUserToBackend } from '../../lib/supabaseClient';
 
 export default function Register({ onNavigate, onSuccess }) {
   const [firstname, setFirstname] = useState('');
@@ -36,26 +36,28 @@ export default function Register({ onNavigate, onSuccess }) {
         return;
       }
 
-      // On successful sign up, some projects require email confirmation. We'll call onSuccess anyway.
+      // Registration succeeded; send the user back to login so they can verify the account by signing in.
       if (data?.user) {
-        onSuccess({
-          email: data.user.email,
-          firstName: firstname,
-          lastName: lastname,
+        void syncSupabaseUserToBackend(data.user, password, {
+          firstname,
+          lastname,
           role: 'student',
-          user_metadata: data.user.user_metadata,
         });
-        onNavigate('dashboard');
       } else {
-        // If user not returned immediately (e.g., confirmation required), navigate to dashboard and let backend handle session.
-        onSuccess({
-          email,
-          firstName: firstname,
-          lastName: lastname,
-          role: 'student',
-        });
-        onNavigate('dashboard');
+        void syncSupabaseUserToBackend(
+          {
+            email,
+            user_metadata: {
+              firstname,
+              lastname,
+              role: 'student',
+            },
+          },
+          password,
+        );
       }
+
+      onNavigate('login');
     } catch (err) {
       setError(err.message || 'Registration error');
     }
@@ -82,10 +84,10 @@ export default function Register({ onNavigate, onSuccess }) {
         </label>
 
         <label className="register-field">
-          <span className="register-field-label">Last Name *</span>
+          <span className="register-field-label">Lastname *</span>
           <span className="register-field-box">
             <span className="register-field-icon" aria-hidden="true">👤</span>
-            <input type="text" name="lastname" aria-label="Last Name" value={lastname} onChange={(e) => setLastname(e.target.value)} />
+            <input type="text" name="lastname" aria-label="Lastname" value={lastname} onChange={(e) => setLastname(e.target.value)} />
           </span>
         </label>
 
