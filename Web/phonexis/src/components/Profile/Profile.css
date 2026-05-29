@@ -7,10 +7,10 @@
 
 .profile-back {
   appearance: none;
-  border: 2px solid #667eea;
+  border: 2px solid #d4af37;
   border-radius: 1.2rem;
-  background: rgba(255, 255, 255, 0.95);
-  color: #667eea;
+  background: rgba(0, 0, 0, 0.4);
+  color: #d4af37;
   padding: 0.9rem 1.5rem;
   cursor: pointer;
   font-weight: 700;
@@ -19,22 +19,22 @@
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
 }
 
 .profile-back:hover {
-  background: #ffffff;
-  border-color: #764ba2;
-  color: #764ba2;
-  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.2);
+  background: rgba(212, 175, 55, 0.2);
+  border-color: #f0e68c;
+  color: #f0e68c;
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
   transform: translateY(-2px);
 }
 
 .profile-header {
   border-radius: 1.8rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 100%);
   padding: 2.5rem;
-  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.5), 0 20px 40px rgba(0, 0, 0, 0.3);
   animation: slideDown 0.6s ease-out;
 }
 
@@ -53,12 +53,12 @@
   width: 6rem;
   height: 6rem;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
   display: grid;
   place-items: center;
   font-size: 3rem;
   flex-shrink: 0;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3),
               inset 0 1px 0 rgba(255, 255, 255, 0.3);
   animation: float 3s ease-in-out infinite;
 }
@@ -73,13 +73,15 @@
   font-size: 1.8rem;
   font-weight: 700;
   letter-spacing: -0.5px;
+  color: #000000;
 }
 
 .profile-header-content p {
   margin: 0.5rem 0 0;
   font-size: 1rem;
-  opacity: 0.95;
-  font-weight: 500 0;
+  opacity: 0.9;
+  font-weight: 500;
+  color: #000000;
 }
 
 .profile-header-content h2 {

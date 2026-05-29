@@ -5,6 +5,12 @@
   padding: 2.5rem 2rem;
   color: #1a1a2e;
   backdrop-filter: blur(10px);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.app-shell-authenticated {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #d4af37;
 }
 
 .app-orb {
@@ -21,7 +27,7 @@
   left: -4rem;
   width: 20rem;
   height: 20rem;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(212, 175, 55, 0.15);
 }
 
 .app-orb-right {
@@ -29,7 +35,7 @@
   top: 15rem;
   width: 25rem;
   height: 25rem;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(212, 175, 55, 0.1);
 }
 
 .app-header,
@@ -82,7 +88,7 @@
 
 .app-eyebrow {
   margin: 0 0 0.5rem;
-  color: #1e7ff7;
+  color: #d4af37;
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.18em;
@@ -95,13 +101,16 @@
   font-size: clamp(2rem, 4vw, 4rem);
   line-height: 0.95;
   letter-spacing: -0.06em;
-  color: #14202d;
+  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .app-brand-copy {
   max-width: 58ch;
   margin: 0.75rem 0 0;
-  color: rgba(20, 32, 45, 0.72);
+  color: #a89942;
   line-height: 1.6;
 }
 
@@ -112,28 +121,29 @@
 }
 
 .app-nav-button {
-  border: 1px solid rgba(25, 31, 39, 0.12);
+  border: 2px solid #d4af37;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
-  color: #263241;
+  background: rgba(0, 0, 0, 0.4);
+  color: #d4af37;
   padding: 0.8rem 1.1rem;
   font: inherit;
   cursor: pointer;
   transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
-  box-shadow: 0 10px 24px rgba(31, 54, 83, 0.1);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
 }
 
 .app-nav-button:hover,
 .app-nav-button:focus-visible {
   transform: translateY(-1px);
-  background: #ffffff;
-  border-color: rgba(31, 127, 247, 0.22);
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #f0e68c;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
 }
 
 .app-nav-button.active {
-  background: linear-gradient(135deg, #2ea3ff, #6bdeff);
-  color: #0c2238;
-  border-color: transparent;
+  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 100%);
+  color: #000000;
+  border-color: #d4af37;
   font-weight: 700;
 }
 
@@ -153,16 +163,16 @@
   align-items: start;
   padding: 1.25rem;
   border-radius: 28px;
-  border: 1px solid rgba(31, 54, 83, 0.08);
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 24px 60px rgba(31, 54, 83, 0.12);
+  border: 2px solid #d4af37;
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.8), rgba(22, 33, 62, 0.8));
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.2), 0 24px 60px rgba(0, 0, 0, 0.4);
 }
 
 .app-auth-copy h2 {
   margin: 0;
   font-size: clamp(1.6rem, 2.5vw, 2.6rem);
   line-height: 1.05;
-  color: #13202f;
+  color: #d4af37;
 }
 
 .app-metrics {
@@ -174,14 +184,14 @@
 .app-metrics article {
   border-radius: 22px;
   padding: 1rem 1.1rem;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(31, 54, 83, 0.08);
-  box-shadow: 0 12px 30px rgba(31, 54, 83, 0.09);
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.6), rgba(22, 33, 62, 0.6));
+  border: 2px solid #d4af37;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
 }
 
 .app-metrics span {
   display: block;
-  color: rgba(38, 49, 63, 0.65);
+  color: #a89942;
   font-size: 0.84rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -192,7 +202,7 @@
   display: block;
   margin-top: 0.5rem;
   font-size: 1.25rem;
-  color: #15202d;
+  color: #d4af37;
 }
 
 .app-hero {
@@ -218,7 +228,7 @@
 
 .app-hero-kicker {
   margin: 0 0 0.65rem;
-  color: #1e7ff7;
+  color: #d4af37;
   font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.12em;
