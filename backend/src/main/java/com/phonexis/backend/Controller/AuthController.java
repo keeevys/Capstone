@@ -1,0 +1,72 @@
+package com.phonexis.backend.Controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.phonexis.backend.Service.AuthService;
+
+@RestController
+@RequestMapping("/api/auth")
+@CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:5173"})
+public class AuthController {
+	private final AuthService authService;
+
+	public AuthController(AuthService authService) {
+		this.authService = authService;
+	}
+
+	@PostMapping("/register")
+	public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+		return ResponseEntity.ok(new AuthResponse(
+			authService.register(request.firstname(), request.lastname(), request.email(), request.password(), request.role())
+		));
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+		return ResponseEntity.ok(new AuthResponse(authService.login(request.email(), request.password())));
+	}
+
+	@PostMapping("/forgot-password")
+	public ResponseEntity<MessageResponse> forgotPassword(@RequestBody EmailRequest request) {
+		authService.requestPasswordReset(request.email());
+		return ResponseEntity.ok(new MessageResponse("If the account exists, password reset is ready."));
+	}
+
+	@PostMapping("/reset-password")
+	public ResponseEntity<MessageResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
+		authService.resetPassword(request.email(), request.password());
+		return ResponseEntity.ok(new MessageResponse("Password updated successfully"));
+	}
+
+	@PostMapping("/change-password")
+	public ResponseEntity<MessageResponse> changePassword(@RequestBody ChangePasswordRequest request) {
+		authService.changePassword(request.email(), request.currentPassword(), request.password());
+		return ResponseEntity.ok(new MessageResponse("Password updated successfully"));
+	}
+
+	public record RegisterRequest(String firstname, String lastname, String email, String password, String role) {
+	}
+
+	public record LoginRequest(String email, String password) {
+	}
+
+	public record EmailRequest(String email) {
+	}
+
+	public record ResetPasswordRequest(String email, String password) {
+	}
+
+	public record ChangePasswordRequest(String email, String currentPassword, String password) {
+	}
+
+	public record AuthResponse(com.phonexis.backend.Service.UserService.UserProfile user) {
+	}
+
+	public record MessageResponse(String message) {
+	}
+}
