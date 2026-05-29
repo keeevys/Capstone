@@ -1,7 +1,8 @@
 import './Modules.css';
 import AlphabetRecognition from './AlphabetRecognition';
 import CVCWords from './CVCWords';
-import VowelsConsonant from './VowelsConsonant';
+import Vowels from './Vowels';
+import Consonants from './Consonants';
 
 const moduleCards = {
   alphabet: {
@@ -9,21 +10,33 @@ const moduleCards = {
     description: 'Letter shapes, sounds, and fast visual recall.',
     component: AlphabetRecognition,
   },
+  vowels: {
+    title: 'Vowels',
+    description: 'Learn vowel sounds with audio guides and activities.',
+    component: Vowels,
+  },
+  consonants: {
+    title: 'Consonants',
+    description: 'Explore consonant sounds with visual learning.',
+    component: Consonants,
+  },
   cvc: {
     title: 'CVC words',
     description: 'Three-letter blend practice for simple decoding.',
     component: CVCWords,
   },
-  vowels: {
-    title: 'Vowels and consonants',
-    description: 'Sort, compare, and reinforce speech sound groups.',
-    component: VowelsConsonant,
-  },
 };
 
-export default function Modules({ activeModule, onNavigate, onSelectModule, onLogout, onComplete, vowelsUnlocked = false, cvcUnlocked = false }) {
+export default function Modules({ activeModule, onNavigate, onSelectModule, onLogout, onComplete, vowelsUnlocked = false, consonantsUnlocked = false, cvcUnlocked = false }) {
   const currentModule = moduleCards[activeModule] ?? moduleCards.alphabet;
   const CurrentGame = currentModule.component;
+
+  const isLocked = (key) => {
+    if (key === 'vowels' && !vowelsUnlocked) return true;
+    if (key === 'consonants' && !consonantsUnlocked) return true;
+    if (key === 'cvc' && !cvcUnlocked) return true;
+    return false;
+  };
 
   return (
     <section className="module-shell">
@@ -56,15 +69,15 @@ export default function Modules({ activeModule, onNavigate, onSelectModule, onLo
             type="button"
             className={
               key === activeModule
-                ? `module-tab active${(key === 'vowels' && !vowelsUnlocked) || (key === 'cvc' && !cvcUnlocked) ? ' locked' : ''}`
-                : `module-tab${(key === 'vowels' && !vowelsUnlocked) || (key === 'cvc' && !cvcUnlocked) ? ' locked' : ''}`
+                ? `module-tab active${isLocked(key) ? ' locked' : ''}`
+                : `module-tab${isLocked(key) ? ' locked' : ''}`
             }
             onClick={() => onSelectModule(key)}
-            disabled={(key === 'vowels' && !vowelsUnlocked) || (key === 'cvc' && !cvcUnlocked)}
+            disabled={isLocked(key)}
           >
             <strong>{module.title}</strong>
             <span>{module.description}</span>
-            {(key === 'vowels' && !vowelsUnlocked) || (key === 'cvc' && !cvcUnlocked) ? <small className="module-tab-lock">Locked</small> : null}
+            {isLocked(key) ? <small className="module-tab-lock">Locked</small> : null}
           </button>
         ))}
       </div>
