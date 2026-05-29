@@ -53,10 +53,13 @@ export default function Dashboard({ onNavigate, onSelectModule, onLogout, user, 
     onNavigate(moduleKey);
   };
 
-  const firstName = user?.firstName || user?.firstname || user?.user_metadata?.firstname || user?.user_metadata?.firstName || '';
-  const lastName = user?.lastName || user?.lastname || user?.user_metadata?.lastname || user?.user_metadata?.lastName || '';
   const emailName = user?.email ? user.email.split('@')[0] : '';
-  const displayName = `${firstName} ${lastName}`.trim() || emailName || 'Learner';
+  const displayName = [user?.firstname || user?.user_metadata?.firstname, user?.lastname || user?.user_metadata?.lastname]
+    .filter(Boolean)
+    .join(' ')
+    || user?.user_metadata?.name
+    || emailName
+    || 'Learner';
 
   return (
     <section className="dashboard-shell">

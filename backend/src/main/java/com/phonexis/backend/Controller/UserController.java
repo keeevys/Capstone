@@ -1,0 +1,79 @@
+package com.phonexis.backend.Controller;
+
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.phonexis.backend.Service.UserService;
+
+@RestController
+@RequestMapping("/api/users")
+@CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:5173"})
+public class UserController {
+	private final UserService userService;
+
+	public UserController(UserService userService) {
+		this.userService = userService;
+	}
+
+	@GetMapping
+	public ResponseEntity<List<UserService.UserProfile>> listUsers() {
+		return ResponseEntity.ok(userService.listUsers());
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
+		return ResponseEntity.ok(new UserResponse(userService.getUser(id)));
+	}
+
+	@PostMapping
+	public ResponseEntity<UserResponse> createUser(@RequestBody CreateUserRequest request) {
+		return ResponseEntity.ok(new UserResponse(
+			userService.createUser(new UserService.CreateUserRequest(
+				request.username(),
+				request.email(),
+				request.password(),
+				request.role()
+			))
+		));
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
+		return ResponseEntity.ok(new UserResponse(
+			userService.updateUser(id, new UserService.UpdateUserRequest(
+				request.username(),
+				request.email(),
+				request.password(),
+				request.role()
+			))
+		));
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<MessageResponse> deleteUser(@PathVariable Long id) {
+		userService.deleteUser(id);
+		return ResponseEntity.ok(new MessageResponse("User deleted successfully"));
+	}
+
+	public record CreateUserRequest(String username, String email, String password, String role) {
+	}
+
+	public record UpdateUserRequest(String username, String email, String password, String role) {
+	}
+
+	public record UserResponse(UserService.UserProfile user) {
+	}
+
+	public record MessageResponse(String message) {
+	}
+}

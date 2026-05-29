@@ -1,6 +1,6 @@
 import './ResetPassword.css';
 import { useState } from 'react';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase, syncSupabasePasswordToBackend } from '../../lib/supabaseClient';
 
 export default function ResetPassword({ onNavigate, email }) {
   const [newPassword, setNewPassword] = useState('');
@@ -26,12 +26,14 @@ export default function ResetPassword({ onNavigate, email }) {
     setLoading(true);
 
     try {
-      const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+      const { error: updateError } = await supabase.auth.updateUser({ email, password: newPassword });
       if (updateError) {
         setError(updateError.message || 'Failed to reset password');
         setLoading(false);
         return;
       }
+
+      void syncSupabasePasswordToBackend(email, null, newPassword);
 
       setSuccess(true);
       setTimeout(() => {

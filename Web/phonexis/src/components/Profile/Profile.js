@@ -1,6 +1,6 @@
 import './Profile.css';
 import { useState } from 'react';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase, syncSupabasePasswordToBackend } from '../../lib/supabaseClient';
 
 export default function Profile({ onNavigate, user, onLogout }) {
   const [activeTab, setActiveTab] = useState('info');
@@ -11,9 +11,12 @@ export default function Profile({ onNavigate, user, onLogout }) {
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const firstName = user?.firstName || user?.firstname || user?.user_metadata?.firstname || user?.user_metadata?.firstName || '';
-  const lastName = user?.lastName || user?.lastname || user?.user_metadata?.lastname || user?.user_metadata?.lastName || '';
-  const displayName = `${firstName} ${lastName}`.trim() || user?.email?.split('@')[0] || 'Learner';
+  const displayName = [user?.firstname || user?.user_metadata?.firstname, user?.lastname || user?.user_metadata?.lastname]
+    .filter(Boolean)
+    .join(' ')
+    || user?.user_metadata?.name
+    || user?.email?.split('@')[0]
+    || 'Learner';
   const email = user?.email || '';
   const role = user?.role || user?.user_metadata?.role || 'student';
 
@@ -35,25 +38,19 @@ export default function Profile({ onNavigate, user, onLogout }) {
     setLoading(true);
 
     try {
-      // First verify current password by attempting to sign in
-      const { error: verifyError } = await supabase.auth.signInWithPassword({ 
-        email, 
-        password: currentPassword 
+      const { error: updateError } = await supabase.auth.updateUser({
+        email,
+        currentPassword,
+        password: newPassword,
       });
 
-      if (verifyError) {
-        setError('Current password is incorrect');
-        setLoading(false);
-        return;
-      }
-
-      // Update password
-      const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
       if (updateError) {
         setError(updateError.message || 'Failed to update password');
         setLoading(false);
         return;
       }
+
+      void syncSupabasePasswordToBackend(email, currentPassword, newPassword);
 
       setSuccess('Password updated successfully!');
       setCurrentPassword('');
@@ -107,7 +104,7 @@ export default function Profile({ onNavigate, user, onLogout }) {
           <div className="profile-info-field">
             <div className="profile-info-icon" aria-hidden="true">👤</div>
             <div>
-              <p className="profile-info-label">Username</p>
+              <p className="profile-info-label">Full Name</p>
               <p className="profile-info-value">{displayName}</p>
             </div>
           </div>
