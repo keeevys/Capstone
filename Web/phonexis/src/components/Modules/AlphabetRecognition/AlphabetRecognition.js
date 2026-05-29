@@ -31,7 +31,7 @@ const alphabet = [
   { letter: 'Z', word: 'Zebra', icon: '🦓' },
 ];
 
-export default function AlphabetRecognition({ onComplete, onBack }) {
+export default function AlphabetRecognition({ onPretestComplete, onBack }) {
   const [selectedLetter, setSelectedLetter] = useState(alphabet[0]);
   const [feedback, setFeedback] = useState('Choose a letter to see its sample object.');
   const [mode, setMode] = useState('learning'); // 'learning' or 'pretest'
@@ -176,6 +176,10 @@ export default function AlphabetRecognition({ onComplete, onBack }) {
         setMode('learning');
         setCurrentPretestLetter(null);
         setHasListened(false);
+
+        if (typeof onPretestComplete === 'function') {
+          onPretestComplete(difficulty);
+        }
       }, 1500);
       return;
     }

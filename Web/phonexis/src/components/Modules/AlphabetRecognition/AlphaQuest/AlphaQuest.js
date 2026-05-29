@@ -3,6 +3,35 @@ import './AlphaQuest.css';
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
+const LETTER_HINTS = {
+  A: { objectName: 'Apple', icon: '🍎' },
+  B: { objectName: 'Ball', icon: '⚽' },
+  C: { objectName: 'Cat', icon: '🐱' },
+  D: { objectName: 'Dog', icon: '🐶' },
+  E: { objectName: 'Egg', icon: '🥚' },
+  F: { objectName: 'Fish', icon: '🐟' },
+  G: { objectName: 'Grapes', icon: '🍇' },
+  H: { objectName: 'Hat', icon: '🎩' },
+  I: { objectName: 'Ice Cream', icon: '🍦' },
+  J: { objectName: 'Jam', icon: '🍓' },
+  K: { objectName: 'Kite', icon: '🪁' },
+  L: { objectName: 'Lion', icon: '🦁' },
+  M: { objectName: 'Moon', icon: '🌙' },
+  N: { objectName: 'Nest', icon: '🪺' },
+  O: { objectName: 'Orange', icon: '🍊' },
+  P: { objectName: 'Pizza', icon: '🍕' },
+  Q: { objectName: 'Queen', icon: '👑' },
+  R: { objectName: 'Robot', icon: '🤖' },
+  S: { objectName: 'Sun', icon: '☀️' },
+  T: { objectName: 'Tree', icon: '🌳' },
+  U: { objectName: 'Umbrella', icon: '☂️' },
+  V: { objectName: 'Violin', icon: '🎻' },
+  W: { objectName: 'Whale', icon: '🐋' },
+  X: { objectName: 'Xylophone', icon: '🎼' },
+  Y: { objectName: 'Yarn', icon: '🧶' },
+  Z: { objectName: 'Zebra', icon: '🦓' },
+};
+
 const DIFFICULTY_MODES = {
   beginner: {
     rounds: 3,
@@ -25,7 +54,7 @@ const DIFFICULTY_MODES = {
 };
 
 export default function AlphaQuest({ onClose }) {
-  const [gameState, setGameState] = useState('menu'); // menu, playing, gameOver, victory
+  const [gameState, setGameState] = useState('menu'); // menu, playing, reward, gameOver, victory
   const [difficulty, setDifficulty] = useState(null);
   const [round, setRound] = useState(1);
   const [currentLetter, setCurrentLetter] = useState(null);
@@ -34,10 +63,13 @@ export default function AlphaQuest({ onClose }) {
   const [maxPlayerHealth, setMaxPlayerHealth] = useState(null);
   const [bossHealth, setBossHealth] = useState(null);
   const [maxBossHealth, setMaxBossHealth] = useState(null);
+  const [hintCount, setHintCount] = useState(0);
+  const [revealedHint, setRevealedHint] = useState(null);
   const [streak, setStreak] = useState(0);
   const [feedback, setFeedback] = useState('');
   const [totalRounds, setTotalRounds] = useState(null);
   const [gameOverMessage, setGameOverMessage] = useState('');
+  const [rewardMessage, setRewardMessage] = useState('');
   const [score, setScore] = useState(0);
 
   // Get random emoji for boss
@@ -73,6 +105,72 @@ export default function AlphaQuest({ onClose }) {
     return '🤓';
   }, [playerHealth, maxPlayerHealth]);
 
+  const getCurrentHint = useCallback((letter) => {
+    if (!letter) return null;
+    return LETTER_HINTS[letter] || null;
+  }, []);
+
+  const showRewardScreen = useCallback(() => {
+    setGameState('reward');
+    setRewardMessage('You defeated the boss! Choose a reward.');
+    setRevealedHint(null);
+  }, []);
+
+  const advanceToNextRound = useCallback(() => {
+    if (round >= totalRounds) {
+      setTimeout(() => {
+        setGameState('victory');
+        setGameOverMessage(`🎉 Victory! You defeated all ${totalRounds} bosses!\nFinal Score: ${score}`);
+      }, 700);
+      return;
+    }
+
+    setTimeout(() => {
+      setGameState('playing');
+      setRound((currentRound) => currentRound + 1);
+      setBossHealth(DIFFICULTY_MODES[difficulty].maxHealth);
+      const newLetter = getRandomLetter();
+      const newBoss = getRandomBossEmoji(DIFFICULTY_MODES[difficulty].emojis);
+      setCurrentLetter(newLetter);
+      setCurrentBoss(newBoss);
+      setFeedback('Next boss incoming! Listen to the letter!');
+      setRevealedHint(null);
+      speakLetter(newLetter);
+    }, 700);
+  }, [difficulty, getRandomBossEmoji, getRandomLetter, round, score, speakLetter, totalRounds]);
+
+  const handleRewardChoice = useCallback(
+    (rewardType) => {
+      if (rewardType === 'health') {
+        if (playerHealth >= maxPlayerHealth) {
+          setRewardMessage('You still have full health. Choose hints instead.');
+          return;
+        }
+
+        setPlayerHealth((currentHealth) => Math.min(currentHealth + 1, maxPlayerHealth));
+        setRewardMessage('You gained 1 heart.');
+        advanceToNextRound();
+        return;
+      }
+
+      if (rewardType === 'hints') {
+        setHintCount((currentHintCount) => currentHintCount + 2);
+        setRewardMessage('You gained 2 hints.');
+        advanceToNextRound();
+      }
+    },
+    [advanceToNextRound, maxPlayerHealth, playerHealth]
+  );
+
+  const handleUseHint = useCallback(() => {
+    if (!currentLetter || hintCount <= 0) return;
+
+    const hint = getCurrentHint(currentLetter);
+    setHintCount((currentHintCount) => Math.max(currentHintCount - 1, 0));
+    setRevealedHint(hint);
+    setFeedback(hint ? 'Hint revealed!' : 'Hint clue is unavailable for this letter.');
+  }, [currentLetter, getCurrentHint, hintCount]);
+
   // Initialize game
   const startGame = (selectedDifficulty) => {
     const mode = DIFFICULTY_MODES[selectedDifficulty];
@@ -84,9 +182,12 @@ export default function AlphaQuest({ onClose }) {
     setMaxPlayerHealth(mode.maxHealth);
     setBossHealth(mode.maxHealth);
     setMaxBossHealth(mode.maxHealth);
+    setHintCount(0);
+    setRevealedHint(null);
     setStreak(0);
     setScore(0);
     setFeedback('Listen to the letter pronunciation and type the correct letter!');
+    setRewardMessage('');
 
     const letter = getRandomLetter();
     const boss = getRandomBossEmoji(mode.emojis);
@@ -120,35 +221,12 @@ export default function AlphaQuest({ onClose }) {
             // Bonus heart for 3-streak
             const bonusHealth = Math.min(playerHealth + 1, maxPlayerHealth);
             setPlayerHealth(bonusHealth);
-            setFeedback(`✓ Correct! Boss defeated! Bonus +1 ❤️ from streak!`);
-          } else {
-            setFeedback(`✓ Correct! Boss defeated!`);
           }
+
+          setFeedback('You defeated the boss!');
 
           setStreak(0);
-
-          // Check if all rounds completed
-          if (round >= totalRounds) {
-            setTimeout(() => {
-              setGameState('victory');
-              setGameOverMessage(
-                `🎉 Victory! You defeated all ${totalRounds} bosses!\nFinal Score: ${newScore}`
-              );
-            }, 1500);
-            return;
-          }
-
-          // Next round
-          setTimeout(() => {
-            setRound(round + 1);
-            setBossHealth(DIFFICULTY_MODES[difficulty].maxHealth);
-            const newLetter = getRandomLetter();
-            const newBoss = getRandomBossEmoji(DIFFICULTY_MODES[difficulty].emojis);
-            setCurrentLetter(newLetter);
-            setCurrentBoss(newBoss);
-            setFeedback('Next boss incoming! Listen to the letter!');
-            speakLetter(newLetter);
-          }, 1500);
+          showRewardScreen();
         } else {
           // Boss still alive
           setBossHealth(newBossHealth);
@@ -175,7 +253,7 @@ export default function AlphaQuest({ onClose }) {
         }
       }
     },
-    [gameState, currentLetter, currentBoss, bossHealth, playerHealth, streak, difficulty, round, totalRounds, score, maxPlayerHealth, getRandomBossEmoji, getRandomLetter, speakLetter]
+      [gameState, currentLetter, currentBoss, bossHealth, playerHealth, streak, difficulty, score, maxPlayerHealth, showRewardScreen, getRandomLetter, speakLetter]
   );
 
   // Listen for keyboard input
@@ -238,7 +316,7 @@ export default function AlphaQuest({ onClose }) {
         </div>
       )}
 
-      {gameState === 'playing' && (
+      {(gameState === 'playing' || gameState === 'reward') && (
         <div className="alpha-quest-game">
           <div className="alpha-quest-header">
             <div className="game-info">
@@ -250,6 +328,41 @@ export default function AlphaQuest({ onClose }) {
               ← Quit
             </button>
           </div>
+
+          {gameState === 'reward' && (
+            <div className="alpha-quest-reward-overlay" role="dialog" aria-modal="true" aria-label="Boss reward selection">
+              <div className="alpha-quest-reward-card">
+                <div className="alpha-quest-reward-emoji">🏆</div>
+                <h2>{rewardMessage || 'You defeated the boss!'}</h2>
+                <p>Choose one reward before the next boss appears.</p>
+
+                <div className="alpha-quest-reward-options">
+                  <button
+                    type="button"
+                    className="alpha-quest-reward-btn health"
+                    onClick={() => handleRewardChoice('health')}
+                  >
+                    <span className="reward-title">Health</span>
+                    <span className="reward-subtitle">+1 heart</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="alpha-quest-reward-btn hints"
+                    onClick={() => handleRewardChoice('hints')}
+                  >
+                    <span className="reward-title">Hints</span>
+                    <span className="reward-subtitle">+2 hints</span>
+                  </button>
+                </div>
+
+                <p className="alpha-quest-reward-note">
+                  {playerHealth >= maxPlayerHealth
+                    ? 'You still have full health, so choose hints instead.'
+                    : 'Health restores 1 heart only when you are damaged.'}
+                </p>
+              </div>
+            </div>
+          )}
 
           <div className="alpha-quest-battle">
             {/* Player Side */}
@@ -281,13 +394,34 @@ export default function AlphaQuest({ onClose }) {
 
           <div className="alpha-quest-feedback">{feedback}</div>
 
+          <div className="alpha-quest-hint-status">
+            <div className="alpha-quest-hint-count">Hints: {hintCount}</div>
+            {revealedHint && (
+              <div className="alpha-quest-hint-card" aria-live="polite">
+                <span className="alpha-quest-hint-icon" aria-hidden="true">
+                  {revealedHint.icon}
+                </span>
+                <span className="alpha-quest-hint-sr-only">Object clue revealed</span>
+              </div>
+            )}
+          </div>
+
           <div className="alpha-quest-controls">
             <button
               type="button"
               className="alpha-quest-listen-btn"
               onClick={() => currentLetter && speakLetter(currentLetter)}
+              disabled={gameState === 'reward'}
             >
               🔊 Listen Again
+            </button>
+            <button
+              type="button"
+              className="alpha-quest-hint-btn"
+              onClick={handleUseHint}
+              disabled={gameState === 'reward' || hintCount <= 0}
+            >
+              💡 Use Hint
             </button>
           </div>
 
@@ -304,6 +438,7 @@ export default function AlphaQuest({ onClose }) {
                 key={letter}
                 className="alpha-quest-letter-btn"
                 onClick={() => handleLetterPress(letter)}
+                disabled={gameState === 'reward'}
               >
                 {letter}
               </button>

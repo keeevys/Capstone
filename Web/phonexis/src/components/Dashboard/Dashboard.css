@@ -248,6 +248,18 @@
   border-color: #f0e68c;
 }
 
+.dashboard-card:disabled,
+.dashboard-card.locked {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.dashboard-card:disabled:hover,
+.dashboard-card.locked:hover {
+  transform: none;
+  border-color: #d4af37;
+}
+
 .dashboard-card-icon {
   width: 5rem;
   height: 5rem;
@@ -338,6 +350,12 @@
 
 .dashboard-card-button:hover::before {
   left: 100%;
+}
+
+.dashboard-card.locked .dashboard-card-button {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffda8b;
+  border-color: rgba(255, 218, 139, 0.45);
 }
 
 .dashboard-card-blue .dashboard-card-button {
