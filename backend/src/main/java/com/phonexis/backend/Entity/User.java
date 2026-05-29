@@ -26,8 +26,11 @@ public class User {
 	@Column(name = "user_id")
 	private Long userId;
 
-	@Column(nullable = false, unique = true, length = 50)
-	private String username;
+	@Column(nullable = false, length = 50)
+	private String firstName;
+
+	@Column(nullable = false, length = 50)
+	private String lastName;
 
 	@Column(nullable = false, unique = true, length = 100)
 	private String email;
@@ -61,12 +64,20 @@ public class User {
 		this.userId = userId;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public String getEmail() {
