@@ -36,11 +36,16 @@ public class UserService {
 
 	@Transactional
 	public UserProfile createUser(CreateUserRequest request) {
-		String username = normalizeUsername(request.username());
+		String firstName = request.firstName() == null ? "" : request.firstName().trim();
+		String lastName = request.lastName() == null ? "" : request.lastName().trim();
 		String email = normalizeEmail(request.email());
 
-		if (username.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username is required");
+		if (firstName.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "First name is required");
+		}
+
+		if (lastName.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Last name is required");
 		}
 
 		if (email.isEmpty()) {
@@ -51,17 +56,16 @@ public class UserService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password must be at least 8 characters");
 		}
 
-		if (userRepository.existsByUsernameIgnoreCase(username)) {
-			throw new ResponseStatusException(HttpStatus.CONFLICT, "An account with that username already exists");
-		}
-
 		if (userRepository.existsByEmailIgnoreCase(email)) {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "An account with that email already exists");
 		}
 
 		User user = new User();
-		applyUserFields(user, username, email, request.role());
+		user.setFirstName(firstName);
+		user.setLastName(lastName);
+		user.setEmail(email);
 		user.setPasswordHash(PASSWORD_ENCODER.encode(request.password()));
+		user.setRole(normalizeRole(request.role()));
 
 		return toUserProfile(userRepository.save(user));
 	}
@@ -69,26 +73,33 @@ public class UserService {
 	@Transactional
 	public UserProfile updateUser(Long id, UpdateUserRequest request) {
 		User user = getUserEntity(id);
-		String username = normalizeUsername(request.username() != null ? request.username() : user.getUsername());
+		String firstName = request.firstName() != null ? request.firstName().trim() : user.getFirstName();
+		String lastName = request.lastName() != null ? request.lastName().trim() : user.getLastName();
 		String email = normalizeEmail(request.email() != null ? request.email() : user.getEmail());
 
-		if (username.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username is required");
+		if (firstName.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "First name is required");
+		}
+
+		if (lastName.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Last name is required");
 		}
 
 		if (email.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is required");
 		}
 
-		if (userRepository.existsByUsernameIgnoreCaseAndUserIdNot(username, id)) {
-			throw new ResponseStatusException(HttpStatus.CONFLICT, "An account with that username already exists");
-		}
-
 		if (userRepository.existsByEmailIgnoreCaseAndUserIdNot(email, id)) {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "An account with that email already exists");
 		}
 
-		applyUserFields(user, username, email, request.role() != null ? request.role() : user.getRole().name());
+		user.setFirstName(firstName);
+		user.setLastName(lastName);
+		user.setEmail(email);
+
+		if (request.role() != null) {
+			user.setRole(normalizeRole(request.role()));
+		}
 
 		if (request.password() != null && !request.password().isBlank()) {
 			if (request.password().length() < 8) {
@@ -142,8 +153,9 @@ public class UserService {
 		userRepository.save(user);
 	}
 
-	private void applyUserFields(User user, String username, String email, String role) {
-		user.setUsername(username);
+	private void applyUserFields(User user, String firstName, String lastName, String email, String role) {
+		user.setFirstName(firstName);
+		user.setLastName(lastName);
 		user.setEmail(email);
 		user.setRole(normalizeRole(role));
 	}
@@ -189,26 +201,28 @@ public class UserService {
 
 	private UserProfile toUserProfile(User user) {
 		Map<String, Object> userMetadata = new LinkedHashMap<>();
-		userMetadata.put("username", user.getUsername());
+		userMetadata.put("firstName", user.getFirstName());
+		userMetadata.put("lastName", user.getLastName());
 		userMetadata.put("role", user.getRole().name().toLowerCase());
 		userMetadata.put("email", user.getEmail());
 
 		return new UserProfile(
 			user.getUserId(),
 			user.getEmail(),
-			user.getUsername(),
+			user.getFirstName(),
+			user.getLastName(),
 			user.getRole().name().toLowerCase(),
 			user.getCreatedAt(),
 			userMetadata
 		);
 	}
 
-	public record CreateUserRequest(String username, String email, String password, String role) {
+	public record CreateUserRequest(String firstName, String lastName, String email, String password, String role) {
 	}
 
-	public record UpdateUserRequest(String username, String email, String password, String role) {
+	public record UpdateUserRequest(String firstName, String lastName, String email, String password, String role) {
 	}
 
-	public record UserProfile(Long id, String email, String username, String role, java.time.LocalDateTime createdAt, Map<String, Object> user_metadata) {
+	public record UserProfile(Long id, String email, String firstName, String lastName, String role, java.time.LocalDateTime createdAt, Map<String, Object> user_metadata) {
 	}
 }

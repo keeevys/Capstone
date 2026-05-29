@@ -21,8 +21,7 @@ public class AuthService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lastname is required");
 		}
 
-		String username = firstname.trim() + " " + lastname.trim();
-		return userService.createUser(new UserService.CreateUserRequest(username, email, password, role));
+		return userService.createUser(new UserService.CreateUserRequest(firstname, lastname, email, password, role));
 	}
 
 	public UserService.UserProfile login(String email, String password) {

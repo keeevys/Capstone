@@ -39,7 +39,8 @@ public class UserController {
 	public ResponseEntity<UserResponse> createUser(@RequestBody CreateUserRequest request) {
 		return ResponseEntity.ok(new UserResponse(
 			userService.createUser(new UserService.CreateUserRequest(
-				request.username(),
+				request.firstName(),
+				request.lastName(),
 				request.email(),
 				request.password(),
 				request.role()
@@ -51,7 +52,8 @@ public class UserController {
 	public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
 		return ResponseEntity.ok(new UserResponse(
 			userService.updateUser(id, new UserService.UpdateUserRequest(
-				request.username(),
+				request.firstName(),
+				request.lastName(),
 				request.email(),
 				request.password(),
 				request.role()
@@ -65,10 +67,10 @@ public class UserController {
 		return ResponseEntity.ok(new MessageResponse("User deleted successfully"));
 	}
 
-	public record CreateUserRequest(String username, String email, String password, String role) {
+	public record CreateUserRequest(String firstName, String lastName, String email, String password, String role) {
 	}
 
-	public record UpdateUserRequest(String username, String email, String password, String role) {
+	public record UpdateUserRequest(String firstName, String lastName, String email, String password, String role) {
 	}
 
 	public record UserResponse(UserService.UserProfile user) {
