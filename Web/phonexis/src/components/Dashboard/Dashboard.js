@@ -5,7 +5,7 @@ const moduleCards = [
     key: 'alphabet',
     icon: '📘',
     title: 'Alphabet Recognition',
-    description: 'Learn letters and sounds with fun tracing activities',
+    description: 'Alphabet Familiarization with fun visuals',
     accent: 'blue',
     progress: 0, // Will be overridden with alphabetProgress
   },
@@ -35,7 +35,7 @@ const moduleCards = [
   },
 ];
 
-export default function Dashboard({ onNavigate, onSelectModule, onLogout, user, overallProgress = 0, alphabetProgress = 0, vowelsUnlocked = false, consonantsUnlocked = false, cvcUnlocked = false }) {
+export default function Dashboard({ onNavigate, onSelectModule, onLogout, user, overallProgress = 0, alphabetProgress = 0, vowelsProgress = 0, consonantsProgress = 0, cvcProgress = 0, vowelsUnlocked = false, consonantsUnlocked = false, cvcUnlocked = false }) {
   const openGame = (moduleKey) => {
     if (moduleKey === 'vowels' && !vowelsUnlocked) {
       return;
@@ -103,8 +103,13 @@ export default function Dashboard({ onNavigate, onSelectModule, onLogout, user, 
       <section className="dashboard-cards" aria-label="Game modules">
         {moduleCards.map((card) => {
           const isLocked = (card.key === 'vowels' && !vowelsUnlocked) || (card.key === 'consonants' && !consonantsUnlocked) || (card.key === 'cvc' && !cvcUnlocked);
-          // Use alphabetProgress for alphabet card, otherwise use card.progress
-          const cardProgress = card.key === 'alphabet' ? alphabetProgress : card.progress;
+          const cardProgressMap = {
+            alphabet: alphabetProgress,
+            vowels: vowelsProgress,
+            consonants: consonantsProgress,
+            cvc: cvcProgress,
+          };
+          const cardProgress = cardProgressMap[card.key] ?? card.progress;
           return (
             <button
               key={card.key}

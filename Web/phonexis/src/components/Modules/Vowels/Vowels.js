@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Vowels.css';
 
 const vowels = [
@@ -41,7 +41,7 @@ const videos = [
   },
 ];
 
-export default function Vowels({ onComplete, onBack }) {
+export default function Vowels({ onComplete, onBack, initialVideosWatched = [], onVideosWatchedChange }) {
   const [mode, setMode] = useState('learning');
   const [selectedLetter, setSelectedLetter] = useState(vowels[0].letter);
   const [pretestIndex, setPretestIndex] = useState(0);
@@ -51,7 +51,10 @@ export default function Vowels({ onComplete, onBack }) {
   const [feedback, setFeedback] = useState('Choose a vowel to hear its sound.');
   const [videosWatched, setVideosWatched] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(null);
-  const [videoProgress, setVideoProgress] = useState({});
+
+  useEffect(() => {
+    setVideosWatched(Array.isArray(initialVideosWatched) ? initialVideosWatched : []);
+  }, [initialVideosWatched]);
 
   const selectedItem = vowels.find((item) => item.letter === selectedLetter) ?? vowels[0];
   const currentPretest = pretestActivityDeck[pretestIndex];
@@ -86,15 +89,19 @@ export default function Vowels({ onComplete, onBack }) {
   };
 
   const handleVideoWatched = (videoId) => {
-    if (!videosWatched.includes(videoId)) {
-      setVideosWatched([...videosWatched, videoId]);
-    }
-  };
+    setVideosWatched((currentVideos) => {
+      if (currentVideos.includes(videoId)) {
+        return currentVideos;
+      }
 
-  const handleVideoComplete = (videoId) => {
-    if (!videosWatched.includes(videoId)) {
-      setVideosWatched((prev) => [...prev, videoId]);
-    }
+      const nextVideos = [...currentVideos, videoId];
+
+      if (typeof onVideosWatchedChange === 'function') {
+        onVideosWatchedChange(nextVideos);
+      }
+
+      return nextVideos;
+    });
   };
 
   const handlePlayVideo = (index) => {
@@ -102,7 +109,7 @@ export default function Vowels({ onComplete, onBack }) {
   };
 
   const handleVideoEnd = (videoId) => {
-    handleVideoComplete(videoId);
+    handleVideoWatched(videoId);
   };
 
   const closeVideoPlayer = () => {

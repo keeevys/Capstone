@@ -1,6 +1,8 @@
 package com.phonexis.backend.Service;
 
 import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -42,12 +44,13 @@ public class ProgressService {
 			.orElse(createDefaultProgress(user, moduleName));
 
 		// Update videos watched
-		String videosJson = "[" + String.join(",", videoIds.stream().map(String::valueOf).toList()) + "]";
+		Set<Integer> uniqueVideoIds = new LinkedHashSet<>(videoIds == null ? List.of() : videoIds);
+		String videosJson = "[" + String.join(",", uniqueVideoIds.stream().map(String::valueOf).toList()) + "]";
 		progress.setVideosWatched(videosJson);
 
 		// Check if all required videos are watched for this module
 		int requiredVideos = getRequiredVideosCount(moduleName);
-		if (videoIds.size() >= requiredVideos) {
+		if (requiredVideos > 0 && uniqueVideoIds.size() >= requiredVideos) {
 			progress.setLessonUnlocked(true);
 			progress.setPretestUnlocked(true);
 		}
@@ -109,12 +112,14 @@ public class ProgressService {
 				if (progress.getEasyModeCompleted()) completed++;
 				if (progress.getMediumModeCompleted()) completed++;
 				if (progress.getHardModeCompleted()) completed++;
-				progress.setCompletionPercentage((completed * 33) / 1);
+				progress.setCompletionPercentage(Math.round((completed / 3.0f) * 100));
 			}
 		} else {
 			// For other modules, completion is based on pretest completion
 			if (progress.getPretestCompleted()) {
 				progress.setCompletionPercentage(100);
+			} else {
+				progress.setCompletionPercentage(0);
 			}
 		}
 
@@ -139,7 +144,7 @@ public class ProgressService {
 
 	private int getRequiredVideosCount(String moduleName) {
 		return switch (moduleName.toLowerCase()) {
-			case "vowels", "consonants" -> 2;
+			case "vowels", "consonants" -> 3;
 			case "alphabet", "cvc" -> 0; // No videos required
 			default -> 0;
 		};

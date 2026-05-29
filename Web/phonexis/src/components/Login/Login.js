@@ -19,18 +19,35 @@ export default function Login({ onNavigate, onSuccess }) {
       }
 
       if (data?.user) {
-        void syncSupabaseUserToBackend(data.user, password, {
+        const backendResult = await syncSupabaseUserToBackend(data.user, password, {
           firstname: data.user.user_metadata?.firstname || data.user.user_metadata?.firstName || '',
           lastname: data.user.user_metadata?.lastname || data.user.user_metadata?.lastName || '',
           role: data.user.user_metadata?.role || 'student',
         });
-        onSuccess({
-          email: data.user.email,
-          firstname: data.user.user_metadata?.firstname || data.user.user_metadata?.firstName || '',
-          lastname: data.user.user_metadata?.lastname || data.user.user_metadata?.lastName || '',
-          role: data.user.user_metadata?.role || 'student',
-          user_metadata: data.user.user_metadata,
-        });
+
+        const backendUser = backendResult?.data?.user;
+        onSuccess(
+          backendUser
+            ? {
+                ...backendUser,
+                firstname: backendUser.firstName || backendUser.firstname || data.user.user_metadata?.firstname || data.user.user_metadata?.firstName || '',
+                lastname: backendUser.lastName || backendUser.lastname || data.user.user_metadata?.lastname || data.user.user_metadata?.lastName || '',
+                user_metadata: {
+                  ...(backendUser.user_metadata || {}),
+                  firstname: backendUser.firstName || backendUser.firstname || data.user.user_metadata?.firstname || data.user.user_metadata?.firstName || '',
+                  lastname: backendUser.lastName || backendUser.lastname || data.user.user_metadata?.lastname || data.user.user_metadata?.lastName || '',
+                  role: backendUser.role || data.user.user_metadata?.role || 'student',
+                  email: backendUser.email || data.user.email,
+                },
+              }
+            : {
+                email: data.user.email,
+                firstname: data.user.user_metadata?.firstname || data.user.user_metadata?.firstName || '',
+                lastname: data.user.user_metadata?.lastname || data.user.user_metadata?.lastName || '',
+                role: data.user.user_metadata?.role || 'student',
+                user_metadata: data.user.user_metadata,
+              }
+        );
         onNavigate('dashboard');
       }
     } catch (err) {

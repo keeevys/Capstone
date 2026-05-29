@@ -1,8 +1,8 @@
 import './Profile.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase, syncSupabasePasswordToBackend } from '../../lib/supabaseClient';
 
-export default function Profile({ onNavigate, user, onLogout }) {
+export default function Profile({ onNavigate, user, overallProgress = 0, alphabetProgress = 0, vowelsProgress = 0, consonantsProgress = 0, cvcProgress = 0, onLogout }) {
   const [activeTab, setActiveTab] = useState('info');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -10,6 +10,39 @@ export default function Profile({ onNavigate, user, onLogout }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [musicVolume, setMusicVolume] = useState(50);
+
+  useEffect(() => {
+    try {
+      const storedVolume = localStorage.getItem('phonexis_music_volume');
+      if (storedVolume !== null) {
+        const parsedVolume = Number(storedVolume);
+        if (!Number.isNaN(parsedVolume)) {
+          setMusicVolume(Math.round(Math.min(Math.max(parsedVolume, 0), 1) * 100));
+        }
+      }
+    } catch (storageError) {
+      // ignore storage errors
+    }
+  }, []);
+
+  const handleMusicVolumeChange = (event) => {
+    const nextVolume = Number(event.target.value);
+    setMusicVolume(nextVolume);
+
+    try {
+      const normalizedVolume = nextVolume / 100;
+      localStorage.setItem('phonexis_music_volume', String(normalizedVolume));
+
+      window.dispatchEvent(
+        new CustomEvent('phonexis:music-volume-change', {
+          detail: normalizedVolume,
+        })
+      );
+    } catch (storageError) {
+      // ignore storage errors
+    }
+  };
 
   const displayName = [user?.firstname || user?.user_metadata?.firstname, user?.lastname || user?.user_metadata?.lastname]
     .filter(Boolean)
@@ -129,15 +162,19 @@ export default function Profile({ onNavigate, user, onLogout }) {
             <h3>Learning Progress</h3>
             <div className="profile-progress-item">
               <span>Alphabet Recognition</span>
-              <span className="profile-progress-percentage">0%</span>
+              <span className="profile-progress-percentage">{alphabetProgress}%</span>
             </div>
             <div className="profile-progress-item">
               <span>Vowels & Consonants</span>
-              <span className="profile-progress-percentage">0%</span>
+              <span className="profile-progress-percentage">{Math.round((vowelsProgress + consonantsProgress) / 2)}%</span>
             </div>
             <div className="profile-progress-item">
               <span>CVC Words</span>
-              <span className="profile-progress-percentage">0%</span>
+              <span className="profile-progress-percentage">{cvcProgress}%</span>
+            </div>
+            <div className="profile-progress-item">
+              <span>Overall Progress</span>
+              <span className="profile-progress-percentage">{overallProgress}%</span>
             </div>
           </div>
         </div>
@@ -202,6 +239,32 @@ export default function Profile({ onNavigate, user, onLogout }) {
                 {loading ? 'UPDATING...' : '✓ UPDATE PASSWORD'}
               </button>
             </form>
+          </div>
+
+          <div className="profile-settings-section profile-audio-section">
+            <div className="profile-settings-header">
+              <span className="profile-settings-icon" aria-hidden="true">🎵</span>
+              <div>
+                <h3>Music Volume</h3>
+                <p>Adjust the dashboard background music level</p>
+              </div>
+            </div>
+
+            <label className="profile-form-field">
+              <span className="profile-form-label">Volume</span>
+              <div className="profile-volume-row">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={musicVolume}
+                  onChange={handleMusicVolumeChange}
+                  className="profile-volume-slider"
+                  aria-label="Music volume"
+                />
+                <strong className="profile-volume-value">{musicVolume}%</strong>
+              </div>
+            </label>
           </div>
 
           <div className="profile-sign-out-section">

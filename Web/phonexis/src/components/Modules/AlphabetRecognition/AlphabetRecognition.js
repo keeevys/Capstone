@@ -44,6 +44,11 @@ export default function AlphabetRecognition({ onPretestComplete, onBack, onProgr
   const [wrongPromptLetters, setWrongPromptLetters] = useState([]); // Track spoken letters answered incorrectly
   const [completedPromptLetters, setCompletedPromptLetters] = useState([]); // Track spoken letters that should not be replayed
   const [showAlphaQuest, setShowAlphaQuest] = useState(false); // Track if AlphaQuest is active
+  const pretestLevels = [
+    { key: 'easy', label: 'Easy', rangeLabel: 'A-M', className: 'easy-level' },
+    { key: 'medium', label: 'Medium', rangeLabel: 'N-Z', className: 'medium-level' },
+    { key: 'hard', label: 'Hard', rangeLabel: 'A-Z', className: 'hard-level' },
+  ];
 
   const letters = useMemo(() => alphabet.map((item) => item.letter), []);
   const selectedIndex = letters.indexOf(selectedLetter.letter);
@@ -255,31 +260,28 @@ export default function AlphabetRecognition({ onPretestComplete, onBack, onProgr
             ))}
           </div>
 
-          <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(3, 1fr)', maxWidth: '800px', margin: '2rem auto 0', width: '100%' }}>
-            <button
-              type="button"
-              className="alphabet-complete-button"
-              onClick={() => startPretest('easy')}
-              style={{ padding: '1.5rem', fontSize: '1.1rem', fontWeight: 700 }}
-            >
-              🟢 EASY (A-M)
-            </button>
-            <button
-              type="button"
-              className="alphabet-complete-button"
-              onClick={() => startPretest('medium')}
-              style={{ padding: '1.5rem', fontSize: '1.1rem', fontWeight: 700, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}
-            >
-              🟡 MEDIUM (N-Z)
-            </button>
-            <button
-              type="button"
-              className="alphabet-complete-button"
-              onClick={() => startPretest('hard')}
-              style={{ padding: '1.5rem', fontSize: '1.1rem', fontWeight: 700, background: 'linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%)' }}
-            >
-              🔴 HARD (A-Z)
-            </button>
+          <div className="pretest-level-grid">
+            {pretestLevels.map((level) => {
+              const isCompleted = completedModes.includes(level.key);
+
+              return (
+                <button
+                  key={level.key}
+                  type="button"
+                  className={`alphabet-complete-button pretest-level-button ${level.className}${isCompleted ? ' completed' : ''}`}
+                  onClick={() => startPretest(level.key)}
+                >
+                  <span className="pretest-level-icon" aria-hidden="true">
+                    {level.key === 'easy' ? '🟢' : level.key === 'medium' ? '🟠' : '🔴'}
+                  </span>
+                  <span className="pretest-level-copy">
+                    <strong>{level.label}</strong>
+                    <span>{level.rangeLabel}</span>
+                  </span>
+                  {isCompleted ? <span className="pretest-level-badge">Completed</span> : null}
+                </button>
+              );
+            })}
           </div>
 
           <div style={{ marginTop: '2rem' }}>
