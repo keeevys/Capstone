@@ -153,13 +153,6 @@ public class UserService {
 		userRepository.save(user);
 	}
 
-	private void applyUserFields(User user, String firstName, String lastName, String email, String role) {
-		user.setFirstName(firstName);
-		user.setLastName(lastName);
-		user.setEmail(email);
-		user.setRole(normalizeRole(role));
-	}
-
 	private User getUserEntity(Long id) {
 		if (id == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User id is required");
@@ -181,10 +174,6 @@ public class UserService {
 
 	private String normalizeEmail(String email) {
 		return email == null ? "" : email.trim().toLowerCase();
-	}
-
-	private String normalizeUsername(String username) {
-		return username == null ? "" : username.trim();
 	}
 
 	private Role normalizeRole(String role) {

@@ -20,14 +20,14 @@ const readBackendError = async (response) => {
   }
 };
 
-const postToBackend = async (path, body) => {
+const requestToBackend = async (path, options = {}) => {
   try {
     const response = await fetch(`${backendUrl}${path}`, {
-      method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+        ...(options.headers || {}),
       },
-      body: JSON.stringify(body),
+      ...options,
     });
 
     if (!response.ok) {
@@ -37,8 +37,10 @@ const postToBackend = async (path, body) => {
       };
     }
 
+    const responseText = await response.text();
+
     return {
-      data: await response.json(),
+      data: responseText ? JSON.parse(responseText) : null,
       error: null,
     };
   } catch (error) {
@@ -49,14 +51,17 @@ const postToBackend = async (path, body) => {
   }
 };
 
-const buildUsername = (firstname, lastname, email) => {
-  const username = [firstname, lastname].filter(Boolean).join(' ').trim();
-  if (username) {
-    return username;
-  }
+const postToBackend = async (path, body) => requestToBackend(path, {
+  method: 'POST',
+  body: JSON.stringify(body),
+});
 
-  return email?.split('@')[0] || '';
-};
+const getFromBackend = async (path) => requestToBackend(path, { method: 'GET' });
+
+const putToBackend = async (path, body) => requestToBackend(path, {
+  method: 'PUT',
+  body: JSON.stringify(body),
+});
 
 const getNameParts = (user, profile = {}) => {
   const firstname = profile.firstname || user?.user_metadata?.firstname || user?.user_metadata?.firstName || user?.firstName || '';
@@ -119,3 +124,10 @@ const syncBackendPassword = async (email, currentPassword, password) => {
 
 export const syncSupabaseUserToBackend = syncBackendUser;
 export const syncSupabasePasswordToBackend = syncBackendPassword;
+export const fetchBackendUsers = () => getFromBackend('/api/users');
+export const fetchBackendProgress = (userId) => getFromBackend(`/api/progress/user/${userId}`);
+export const fetchBackendModuleProgress = (userId, moduleName) => getFromBackend(`/api/progress/user/${userId}/module/${encodeURIComponent(moduleName)}`);
+export const updateBackendModuleVideos = (userId, moduleName, videoIds) => postToBackend(`/api/progress/user/${userId}/module/${encodeURIComponent(moduleName)}/videos`, {
+  videoIds,
+});
+export const updateBackendModuleProgress = (userId, moduleName, payload) => putToBackend(`/api/progress/user/${userId}/module/${encodeURIComponent(moduleName)}`, payload);

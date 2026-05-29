@@ -254,9 +254,31 @@
   font-size: 1.8rem;
   flex-shrink: 0;
 }
+.profile-audio-section {
+  padding-top: 0.5rem;
+}
 
 .profile-settings-header h3 {
   margin: 0;
+.profile-volume-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.profile-volume-slider {
+  flex: 1;
+  accent-color: #ff6b6b;
+  height: 0.45rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.profile-volume-value {
+  min-width: 3.5rem;
+  text-align: right;
+  color: #ff6b6b;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
   font-size: 1.1rem;
   color: #2c3141;
   font-weight: 600;

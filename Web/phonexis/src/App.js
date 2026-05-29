@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import './App.css';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
@@ -11,11 +11,19 @@ import AlphabetRecognition from './components/Modules/AlphabetRecognition';
 import CVCWords from './components/Modules/CVCWords';
 import Vowels from './components/Modules/Vowels';
 import Consonants from './components/Modules/Consonants';
+import {
+  supabase,
+  fetchBackendUsers,
+  fetchBackendProgress,
+  updateBackendModuleProgress,
+  updateBackendModuleVideos,
+} from './lib/supabaseClient';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeView, setActiveView] = useState('login');
   const audioRef = useRef(null);
+  const [musicVolume, setMusicVolume] = useState(0.5);
   const [activeModule, setActiveModule] = useState('alphabet');
   const [currentUser, setCurrentUser] = useState(null);
   const [resetEmail, setResetEmail] = useState(null);
@@ -24,63 +32,325 @@ function App() {
   const [vowelsCompleted, setVowelsCompleted] = useState(false);
   const [consonantsCompleted, setConsonantsCompleted] = useState(false);
   const [cvcCompleted, setCvcCompleted] = useState(false);
+  const [vowelsWatchedVideos, setVowelsWatchedVideos] = useState([]);
+  const [isProgressHydrated, setIsProgressHydrated] = useState(false);
+  const [backendUserId, setBackendUserId] = useState(null);
+
+  const mapAuthUserToProfile = useCallback((user) => {
+    if (!user) {
+      return null;
+    }
+
+    const firstname = user.user_metadata?.firstname || user.user_metadata?.firstName || user.firstname || user.firstName || '';
+    const lastname = user.user_metadata?.lastname || user.user_metadata?.lastName || user.lastname || user.lastName || '';
+    const role = user.user_metadata?.role || user.role || 'student';
+
+    return {
+      ...user,
+      firstname,
+      lastname,
+      role,
+      user_metadata: {
+        ...(user.user_metadata || {}),
+        firstname,
+        lastname,
+        role,
+        email: user.email || user.user_metadata?.email,
+      },
+    };
+  }, []);
+
+  useEffect(() => {
+    try {
+      const storedVolume = localStorage.getItem('phonexis_music_volume');
+      if (storedVolume !== null) {
+        const parsedVolume = Number(storedVolume);
+        if (!Number.isNaN(parsedVolume)) {
+          setMusicVolume(Math.min(Math.max(parsedVolume, 0), 1));
+        }
+      }
+    } catch (error) {
+      // ignore storage errors
+    }
+
+    const handleMusicVolumeChange = (event) => {
+      const nextVolume = Number(event?.detail);
+      if (Number.isNaN(nextVolume)) {
+        return;
+      }
+
+      const clampedVolume = Math.min(Math.max(nextVolume, 0), 1);
+      setMusicVolume(clampedVolume);
+    };
+
+    window.addEventListener('phonexis:music-volume-change', handleMusicVolumeChange);
+
+    return () => {
+      window.removeEventListener('phonexis:music-volume-change', handleMusicVolumeChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const restoreSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      const sessionUser = data?.session?.user;
+
+      if (cancelled || !sessionUser) {
+        return;
+      }
+
+      setCurrentUser(mapAuthUserToProfile(sessionUser));
+      setIsAuthenticated(true);
+      setActiveView((currentView) => (currentView === 'login' ? 'dashboard' : currentView));
+    };
+
+    void restoreSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session?.user) {
+        setIsAuthenticated(false);
+        setCurrentUser(null);
+        setActiveView('login');
+        return;
+      }
+
+      setCurrentUser(mapAuthUserToProfile(session.user));
+      setIsAuthenticated(true);
+      setActiveView((currentView) => (currentView === 'login' ? 'dashboard' : currentView));
+    });
+
+    return () => {
+      cancelled = true;
+      subscription?.unsubscribe();
+    };
+  }, [mapAuthUserToProfile]);
 
   // Build a stable storage key for the logged-in user
   const getProgressKey = (user) => {
     if (!user) return null;
-    const id = user.id || user.email || user.user_metadata?.email || JSON.stringify(user);
-    return `phonexis_progress_${String(id)}`;
+    const email = (user.email || user.user_metadata?.email || '').trim().toLowerCase();
+    const id = user.id;
+    const stableKey = email || id || JSON.stringify(user);
+    return `phonexis_progress_${String(stableKey)}`;
   };
+
+  const parseVideoIds = useCallback((videosWatched) => {
+    if (!videosWatched) {
+      return [];
+    }
+
+    if (Array.isArray(videosWatched)) {
+      return videosWatched;
+    }
+
+    try {
+      const parsed = JSON.parse(videosWatched);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  }, []);
+
+  const applyProgressSnapshot = useCallback((snapshot = {}) => {
+    const nextCompletedPretests = snapshot.completedPretests || [];
+    const nextCompletedAlphabetModes = snapshot.completedAlphabetModes || nextCompletedPretests;
+
+    setCompletedPretests(nextCompletedPretests);
+    setCompletedAlphabetModes(nextCompletedAlphabetModes);
+    setVowelsCompleted(!!snapshot.vowelsCompleted);
+    setConsonantsCompleted(!!snapshot.consonantsCompleted);
+    setCvcCompleted(!!snapshot.cvcCompleted);
+    setVowelsWatchedVideos(parseVideoIds(snapshot.vowelsWatchedVideos));
+  }, [parseVideoIds]);
+
+  const mapBackendProgressToSnapshot = useCallback((progressList = []) => {
+    const byModule = new Map(progressList.map((progress) => [String(progress?.moduleName || '').toLowerCase(), progress]));
+    const alphabetProgress = byModule.get('alphabet');
+    const vowelsProgress = byModule.get('vowels');
+    const consonantsProgress = byModule.get('consonants');
+    const cvcProgress = byModule.get('cvc');
+
+    return {
+      completedPretests: [
+        alphabetProgress?.easyModeCompleted ? 'easy' : null,
+        alphabetProgress?.mediumModeCompleted ? 'medium' : null,
+        alphabetProgress?.hardModeCompleted ? 'hard' : null,
+      ].filter(Boolean),
+      completedAlphabetModes: [
+        alphabetProgress?.easyModeCompleted ? 'easy' : null,
+        alphabetProgress?.mediumModeCompleted ? 'medium' : null,
+        alphabetProgress?.hardModeCompleted ? 'hard' : null,
+      ].filter(Boolean),
+      vowelsCompleted: !!(vowelsProgress?.pretestCompleted || vowelsProgress?.completionPercentage >= 100),
+      consonantsCompleted: !!(consonantsProgress?.pretestCompleted || consonantsProgress?.completionPercentage >= 100),
+      cvcCompleted: !!(cvcProgress?.pretestCompleted || cvcProgress?.completionPercentage >= 100),
+      vowelsWatchedVideos: parseVideoIds(vowelsProgress?.videosWatched),
+    };
+  }, [parseVideoIds]);
+
+  const resetProgressState = useCallback(() => {
+    setCompletedPretests([]);
+    setCompletedAlphabetModes([]);
+    setVowelsCompleted(false);
+    setConsonantsCompleted(false);
+    setCvcCompleted(false);
+    setVowelsWatchedVideos([]);
+    setBackendUserId(null);
+    setIsProgressHydrated(false);
+  }, []);
+
+  const resolveBackendUserId = useCallback(async (user) => {
+    if (!user) {
+      return null;
+    }
+
+    if (typeof user.id === 'number') {
+      return user.id;
+    }
+
+    if (typeof user.id === 'string' && /^\d+$/.test(user.id)) {
+      return Number(user.id);
+    }
+
+    const email = (user.email || user.user_metadata?.email || '').trim().toLowerCase();
+    if (!email) {
+      return null;
+    }
+
+    const backendUsers = await fetchBackendUsers();
+    if (backendUsers.error || !Array.isArray(backendUsers.data)) {
+      return null;
+    }
+
+    const matchedUser = backendUsers.data.find((entry) => String(entry?.email || '').trim().toLowerCase() === email);
+    return matchedUser?.id ?? null;
+  }, []);
 
   // Load progress for the current user when they log in
   useEffect(() => {
-    if (!currentUser) return;
-    try {
-      const key = getProgressKey(currentUser);
-      const raw = localStorage.getItem(key);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        setCompletedPretests(parsed.completedPretests || []);
-        setCompletedAlphabetModes(parsed.completedAlphabetModes || []);
-        setVowelsCompleted(!!parsed.vowelsCompleted);
-        setConsonantsCompleted(!!parsed.consonantsCompleted);
-        setCvcCompleted(!!parsed.cvcCompleted);
-      } else {
-        // initialize empty progress
-        setCompletedPretests([]);
-        setCompletedAlphabetModes([]);
-        setVowelsCompleted(false);
-        setConsonantsCompleted(false);
-        setCvcCompleted(false);
-      }
-    } catch (e) {
-      // ignore parse errors
-      setCompletedPretests([]);
-      setCompletedAlphabetModes([]);
-      setVowelsCompleted(false);
-      setCvcCompleted(false);
+    if (!currentUser) {
+      resetProgressState();
+      return;
     }
-  }, [currentUser]);
 
-  // Persist progress whenever it changes for the logged-in user
+    let cancelled = false;
+
+    const loadProgress = async () => {
+      resetProgressState();
+
+      const resolvedBackendUserId = await resolveBackendUserId(currentUser);
+
+      if (!cancelled) {
+        setBackendUserId(resolvedBackendUserId);
+      }
+
+      try {
+        const key = getProgressKey(currentUser);
+        const raw = key ? localStorage.getItem(key) : null;
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          applyProgressSnapshot(parsed);
+        } else {
+          applyProgressSnapshot({});
+        }
+      } catch (error) {
+        applyProgressSnapshot({});
+      }
+
+      if (resolvedBackendUserId) {
+        const backendResult = await fetchBackendProgress(resolvedBackendUserId);
+        if (!cancelled && !backendResult.error && Array.isArray(backendResult.data) && backendResult.data.length > 0) {
+          applyProgressSnapshot(mapBackendProgressToSnapshot(backendResult.data));
+        }
+      }
+
+      if (!cancelled) {
+        setIsProgressHydrated(true);
+      }
+    };
+
+    void loadProgress();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUser, applyProgressSnapshot, mapBackendProgressToSnapshot, resolveBackendUserId, resetProgressState]);
+
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser || !isProgressHydrated) return;
+
     try {
       const key = getProgressKey(currentUser);
-      const payload = JSON.stringify({ completedPretests, completedAlphabetModes, vowelsCompleted, consonantsCompleted, cvcCompleted });
-      localStorage.setItem(key, payload);
+      const payload = JSON.stringify({
+        completedPretests,
+        completedAlphabetModes,
+        vowelsCompleted,
+        consonantsCompleted,
+        cvcCompleted,
+        vowelsWatchedVideos,
+      });
+      if (key) {
+        localStorage.setItem(key, payload);
+      }
     } catch (e) {
       // ignore storage errors
     }
-  }, [currentUser, completedPretests, completedAlphabetModes, vowelsCompleted, consonantsCompleted, cvcCompleted]);
+
+    const effectiveBackendUserId = backendUserId || currentUser?.id;
+
+    if (!effectiveBackendUserId) {
+      return;
+    }
+
+    const syncBackendProgress = async () => {
+      await Promise.all([
+        updateBackendModuleProgress(effectiveBackendUserId, 'alphabet', {
+          easyModeCompleted: completedPretests.includes('easy'),
+          mediumModeCompleted: completedPretests.includes('medium'),
+          hardModeCompleted: completedPretests.includes('hard'),
+        }),
+        updateBackendModuleVideos(effectiveBackendUserId, 'vowels', vowelsWatchedVideos),
+        updateBackendModuleProgress(effectiveBackendUserId, 'vowels', {
+          pretestCompleted: vowelsCompleted,
+        }),
+        updateBackendModuleProgress(effectiveBackendUserId, 'consonants', {
+          pretestCompleted: consonantsCompleted,
+        }),
+        updateBackendModuleProgress(effectiveBackendUserId, 'cvc', {
+          pretestCompleted: cvcCompleted,
+        }),
+      ]);
+    };
+
+    void syncBackendProgress();
+  }, [currentUser, backendUserId, isProgressHydrated, completedPretests, completedAlphabetModes, vowelsCompleted, consonantsCompleted, cvcCompleted, vowelsWatchedVideos]);
 
   // Background music effect
   useEffect(() => {
+    const pauseAudioSafely = () => {
+      if (!audioRef.current) {
+        return;
+      }
+
+      try {
+        audioRef.current.pause();
+      } catch (error) {
+        if (error?.name !== 'NotImplementedError') {
+          throw error;
+        }
+      }
+    };
+
     if (!audioRef.current) {
       audioRef.current = new Audio('/background-music/Children\'s Music  Happy Upbeat Music (Instrumental Music For Kids).mp3');
       audioRef.current.loop = true;
-      audioRef.current.volume = 0.5;
     }
+
+    audioRef.current.volume = musicVolume;
 
     // Play music when user is authenticated (on dashboard)
     if (isAuthenticated && activeView === 'dashboard') {
@@ -89,26 +359,24 @@ function App() {
       });
     } else {
       // Pause music when not on dashboard or not authenticated
-      audioRef.current.pause();
+      pauseAudioSafely();
     }
 
     return () => {
       // Cleanup on unmount
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
+      pauseAudioSafely();
     };
-  }, [isAuthenticated, activeView]);
+  }, [isAuthenticated, activeView, musicVolume]);
 
-  const vowelsUnlocked = completedPretests.length >= 3;
-  const consonantsUnlocked = vowelsCompleted;
-  const cvcUnlocked = consonantsCompleted;
-  
-  // Calculate alphabet progress: 100% only when all 3 modes completed, otherwise: (completed / 3) * 100
-  const alphabetProgress = completedAlphabetModes.length === 3 ? 100 : Math.round((completedAlphabetModes.length / 3) * 100);
-  
-  const completedStages = Math.min(completedPretests.length, 3) + (vowelsCompleted ? 1 : 0) + (consonantsCompleted ? 1 : 0) + (cvcCompleted ? 1 : 0);
-  const overallProgress = Math.round((completedStages / 6) * 100);
+  // Module progress is driven by the user's completed steps.
+  const alphabetProgress = Math.round((completedAlphabetModes.length / 3) * 100);
+  const vowelsProgress = vowelsCompleted ? 100 : Math.round((vowelsWatchedVideos.length / 3) * 100);
+  const consonantsProgress = consonantsCompleted ? 100 : 0;
+  const cvcProgress = cvcCompleted ? 100 : 0;
+  const overallProgress = Math.round((alphabetProgress + vowelsProgress + consonantsProgress + cvcProgress) / 4);
+  const vowelsUnlocked = alphabetProgress >= 100;
+  const consonantsUnlocked = vowelsProgress >= 100;
+  const cvcUnlocked = consonantsProgress >= 100;
 
   const handlePretestComplete = (difficulty) => {
     setCompletedPretests((currentPretests) => {
@@ -163,10 +431,22 @@ function App() {
 
   const handleAuthSuccess = (userProfile) => {
     if (userProfile) {
-      setCurrentUser(userProfile);
+      setCurrentUser(mapAuthUserToProfile(userProfile));
     }
 
     setIsAuthenticated(true);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      // ignore sign-out errors and clear local state anyway
+    }
+
+    setIsAuthenticated(false);
+    setCurrentUser(null);
+    setActiveView('login');
   };
 
   const renderView = () => {
@@ -211,14 +491,13 @@ function App() {
               user={currentUser}
               overallProgress={overallProgress}
               alphabetProgress={alphabetProgress}
+              vowelsProgress={vowelsProgress}
+              consonantsProgress={consonantsProgress}
+              cvcProgress={cvcProgress}
               vowelsUnlocked={vowelsUnlocked}
               consonantsUnlocked={consonantsUnlocked}
               cvcUnlocked={cvcUnlocked}
-              onLogout={() => {
-                setIsAuthenticated(false);
-                setCurrentUser(null);
-                setActiveView('login');
-              }}
+              onLogout={handleLogout}
             />
           );
         }
@@ -238,14 +517,13 @@ function App() {
               user={currentUser}
               overallProgress={overallProgress}
               alphabetProgress={alphabetProgress}
+              vowelsProgress={vowelsProgress}
+              consonantsProgress={consonantsProgress}
+              cvcProgress={cvcProgress}
               vowelsUnlocked={vowelsUnlocked}
               consonantsUnlocked={consonantsUnlocked}
               cvcUnlocked={cvcUnlocked}
-              onLogout={() => {
-                setIsAuthenticated(false);
-                setCurrentUser(null);
-                setActiveView('login');
-              }}
+              onLogout={handleLogout}
             />
           );
         }
@@ -254,6 +532,8 @@ function App() {
           <Vowels
             onComplete={handleVowelsComplete}
             onBack={() => setActiveView('dashboard')}
+            initialVideosWatched={vowelsWatchedVideos}
+            onVideosWatchedChange={setVowelsWatchedVideos}
           />
         );
       case 'consonants':
@@ -265,14 +545,13 @@ function App() {
               user={currentUser}
               overallProgress={overallProgress}
               alphabetProgress={alphabetProgress}
+              vowelsProgress={vowelsProgress}
+              consonantsProgress={consonantsProgress}
+              cvcProgress={cvcProgress}
               vowelsUnlocked={vowelsUnlocked}
               consonantsUnlocked={consonantsUnlocked}
               cvcUnlocked={cvcUnlocked}
-              onLogout={() => {
-                setIsAuthenticated(false);
-                setCurrentUser(null);
-                setActiveView('login');
-              }}
+              onLogout={handleLogout}
             />
           );
         }
@@ -307,10 +586,7 @@ function App() {
                 handleCvcComplete();
               }
             }}
-            onLogout={() => {
-              setIsAuthenticated(false);
-              setActiveView('login');
-            }}
+            onLogout={handleLogout}
           />
         );
       case 'profile':
@@ -318,11 +594,12 @@ function App() {
           <Profile
             onNavigate={setActiveView}
             user={currentUser}
-            onLogout={() => {
-              setIsAuthenticated(false);
-              setCurrentUser(null);
-              setActiveView('login');
-            }}
+            overallProgress={overallProgress}
+            alphabetProgress={alphabetProgress}
+            vowelsProgress={vowelsProgress}
+            consonantsProgress={consonantsProgress}
+            cvcProgress={cvcProgress}
+            onLogout={handleLogout}
           />
         );
       case 'dashboard':
@@ -334,14 +611,13 @@ function App() {
             user={currentUser}
             overallProgress={overallProgress}
             alphabetProgress={alphabetProgress}
+            vowelsProgress={vowelsProgress}
+            consonantsProgress={consonantsProgress}
+            cvcProgress={cvcProgress}
             vowelsUnlocked={vowelsUnlocked}
             consonantsUnlocked={consonantsUnlocked}
             cvcUnlocked={cvcUnlocked}
-            onLogout={() => {
-              setIsAuthenticated(false);
-              setCurrentUser(null);
-              setActiveView('login');
-            }}
+            onLogout={handleLogout}
           />
         );
     }

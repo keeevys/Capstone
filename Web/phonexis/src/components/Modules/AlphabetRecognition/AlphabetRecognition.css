@@ -175,6 +175,103 @@
   background: linear-gradient(135deg, #f0e68c 0%, #d4af37 100%);
 }
 
+.pretest-level-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  max-width: 800px;
+  margin: 2rem auto 0;
+  width: 100%;
+}
+
+.pretest-level-button {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.2rem 1.4rem;
+  justify-content: space-between;
+  text-align: left;
+  min-height: 5.4rem;
+  position: relative;
+}
+
+.pretest-level-copy {
+  display: grid;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.pretest-level-copy strong {
+  font-size: 1.05rem;
+}
+
+.pretest-level-copy span {
+  font-size: 0.85rem;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.pretest-level-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.pretest-level-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.pretest-level-button.easy-level {
+  color: #0b2d14;
+  background: linear-gradient(135deg, #37d66b 0%, #1ea84d 100%);
+  border-color: #1ea84d;
+}
+
+.pretest-level-button.medium-level {
+  color: #4a2b00;
+  background: linear-gradient(135deg, #ffb347 0%, #f57c00 100%);
+  border-color: #f57c00;
+}
+
+.pretest-level-button.hard-level {
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff6b6b 0%, #e53935 100%);
+  border-color: #e53935;
+}
+
+.pretest-level-button.completed {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.15), 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+.pretest-level-button.completed::after {
+  content: '✓';
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.25);
+  color: currentColor;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.pretest-level-button.completed:hover {
+  transform: translateY(-2px);
+}
+
 .game-feedback {
   margin: 0;
   color: #d4af37;

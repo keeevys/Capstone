@@ -116,6 +116,11 @@ export default function AlphaQuest({ onClose }) {
     setRevealedHint(null);
   }, []);
 
+  const showVictoryScreen = useCallback(() => {
+    setGameState('victory');
+    setGameOverMessage(`🎉 Victory! You defeated all ${totalRounds} bosses!\nFinal Score: ${score}`);
+  }, [score, totalRounds]);
+
   const advanceToNextRound = useCallback(() => {
     if (round >= totalRounds) {
       setTimeout(() => {
@@ -226,6 +231,13 @@ export default function AlphaQuest({ onClose }) {
           setFeedback('You defeated the boss!');
 
           setStreak(0);
+          if (round >= totalRounds) {
+            setTimeout(() => {
+              showVictoryScreen();
+            }, 700);
+            return;
+          }
+
           showRewardScreen();
         } else {
           // Boss still alive
@@ -253,7 +265,7 @@ export default function AlphaQuest({ onClose }) {
         }
       }
     },
-      [gameState, currentLetter, currentBoss, bossHealth, playerHealth, streak, difficulty, score, maxPlayerHealth, showRewardScreen, getRandomLetter, speakLetter]
+        [gameState, currentLetter, currentBoss, bossHealth, playerHealth, streak, difficulty, score, maxPlayerHealth, round, totalRounds, showRewardScreen, showVictoryScreen, getRandomLetter, speakLetter]
   );
 
   // Listen for keyboard input
