@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
@@ -15,6 +15,7 @@ import Consonants from './components/Modules/Consonants';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeView, setActiveView] = useState('login');
+  const audioRef = useRef(null);
   const [activeModule, setActiveModule] = useState('alphabet');
   const [currentUser, setCurrentUser] = useState(null);
   const [resetEmail, setResetEmail] = useState(null);
@@ -68,6 +69,32 @@ function App() {
       // ignore storage errors
     }
   }, [currentUser, completedPretests, vowelsCompleted, consonantsCompleted, cvcCompleted]);
+
+  // Background music effect
+  useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio('/background-music/Children\'s Music  Happy Upbeat Music (Instrumental Music For Kids).mp3');
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.5;
+    }
+
+    // Play music when user is authenticated (on dashboard)
+    if (isAuthenticated && activeView === 'dashboard') {
+      audioRef.current.play().catch(err => {
+        console.log('Audio autoplay prevented. User interaction required:', err);
+      });
+    } else {
+      // Pause music when not on dashboard or not authenticated
+      audioRef.current.pause();
+    }
+
+    return () => {
+      // Cleanup on unmount
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, [isAuthenticated, activeView]);
 
   const vowelsUnlocked = completedPretests.length >= 3;
   const consonantsUnlocked = vowelsCompleted;

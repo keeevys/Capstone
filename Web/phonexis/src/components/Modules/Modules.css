@@ -10,10 +10,10 @@
   gap: 1.5rem;
   padding: 2rem;
   border-radius: 1.8rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 255, 240, 0.95));
   backdrop-filter: blur(10px);
-  border: 3px solid #d4af37;
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.2), 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+  border: 3px solid #FFD700;
+  box-shadow: 0 12px 40px rgba(77, 150, 255, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.1);
   animation: slideDown 0.6s ease-out;
 }
 
@@ -31,7 +31,7 @@
 .module-banner h3 {
   margin: 0;
   font-size: clamp(1.5rem, 3vw, 2.5rem);
-  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 100%);
+  background: linear-gradient(135deg, #FF6B6B 0%, #FFD700 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -42,7 +42,7 @@
 .module-banner p {
   margin: 0.8rem 0 0;
   max-width: 58ch;
-  color: #a89942;
+  color: #2C3E50;
   line-height: 1.7;
   font-size: 1.05rem;
 }
@@ -58,21 +58,21 @@
 .module-objective {
   border-radius: 1.2rem;
   padding: 1rem 1.3rem;
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(240, 230, 140, 0.08));
-  border: 2px solid #d4af37;
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+  background: linear-gradient(135deg, rgba(77, 150, 255, 0.1), rgba(135, 206, 235, 0.08));
+  border: 2px solid #4D96FF;
+  box-shadow: 0 8px 20px rgba(77, 150, 255, 0.15);
   transition: all 0.3s ease;
 }
 
 .module-banner-stats article:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 12px 30px rgba(77, 150, 255, 0.3);
 }
 
 .module-banner-stats span,
 .module-objective span {
   display: block;
-  color: #d4af37;
+  color: #FF6B6B;
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -83,7 +83,7 @@
 .module-objective strong {
   display: block;
   margin-top: 0.6rem;
-  color: #f0e68c;
+  color: #4D96FF;
   font-size: 1.3rem;
   font-weight: 700;
 }
@@ -100,11 +100,11 @@
   text-align: left;
   border-radius: 1.3rem;
   padding: 1.3rem;
-  border: 2px solid #d4af37;
-  background: rgba(0, 0, 0, 0.3);
-  color: #d4af37;
+  border: 2px solid #4D96FF;
+  background: rgba(77, 150, 255, 0.08);
+  color: #4D96FF;
   cursor: pointer;
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 8px 20px rgba(77, 150, 255, 0.15);
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   backdrop-filter: blur(5px);
   animation: fadeIn 0.5s ease-out both;
@@ -134,10 +134,10 @@
 }
 
 .module-tab:hover {
-  border-color: #f0e68c;
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+  border-color: #FF6B6B;
+  box-shadow: 0 12px 30px rgba(77, 150, 255, 0.3);
   transform: translateY(-3px);
-  background: rgba(212, 175, 55, 0.15);
+  background: rgba(77, 150, 255, 0.15);
 }
 
 .module-tab:disabled,
@@ -148,42 +148,42 @@
 
 .module-tab:disabled:hover,
 .module-tab.locked:hover {
-  border-color: #d4af37;
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+  border-color: #4D96FF;
+  box-shadow: 0 8px 20px rgba(77, 150, 255, 0.15);
   transform: none;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(77, 150, 255, 0.08);
 }
 
 .module-tab h4 {
   margin: 0;
   font-size: 1.15rem;
   font-weight: 700;
-  color: #f0e68c;
+  color: #FF6B6B;
   letter-spacing: -0.3px;
 }
 
 .module-tab span {
-  color: #a89942;
+  color: #2C3E50;
   line-height: 1.5;
   font-size: 0.95rem;
 }
 
 .module-tab.active {
-  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 100%);
-  border-color: #f0e68c;
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+  background: linear-gradient(135deg, #FF6B6B 0%, #FFD700 100%);
+  border-color: #FFD700;
+  box-shadow: 0 12px 30px rgba(255, 107, 107, 0.4);
 }
 
 .module-tab.active h4 {
-  color: #000000;
+  color: #FFFFFF;
 }
 
 .module-tab.active span {
-  color: #000000;
+  color: #FFFFFF;
 }
 
 .module-tab-lock {
-  color: #f0e68c;
+  color: #FFD700;
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -196,11 +196,11 @@
 
 .module-stage {
   border-radius: 1.5rem;
-  border: 3px solid #d4af37;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 3px solid #FFD700;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 255, 240, 0.95));
   backdrop-filter: blur(10px);
   padding: 2rem;
-  box-shadow: 0 0 40px rgba(212, 175, 55, 0.3), 0 20px 60px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 12px 40px rgba(77, 150, 255, 0.15), 0 20px 60px rgba(0, 0, 0, 0.1);
   animation: fadeInUp 0.6s ease-out 0.2s both;
   transition: all 0.3s ease;
 }
@@ -217,13 +217,13 @@
 }
 
 .module-stage:hover {
-  box-shadow: 0 0 50px rgba(212, 175, 55, 0.4), 0 25px 70px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 12px 50px rgba(77, 150, 255, 0.25), 0 25px 70px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
 }
 
 .module-label {
   margin: 0 0 0.8rem;
-  color: #d4af37;
+  color: #FF6B6B;
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -232,7 +232,7 @@
 
 .module-stage h2 {
   margin: 0 0 0.8rem 0;
-  color: #d4af37;
+  color: #FF6B6B;
   font-size: 1.8rem;
   font-weight: 700;
   letter-spacing: -0.5px;
@@ -240,7 +240,7 @@
 
 .module-stage p {
   margin: 0 0 1.2rem 0;
-  color: #a89942;
+  color: #2C3E50;
   line-height: 1.7;
   font-size: 1rem;
 }

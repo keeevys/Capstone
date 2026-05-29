@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.95));
+  background: radial-gradient(ellipse at center, rgba(30, 144, 255, 0.2), rgba(135, 206, 235, 0.3));
   backdrop-filter: blur(5px);
   z-index: 1000;
   animation: fadeIn 0.5s ease-out;
@@ -36,10 +36,10 @@
   padding: 2rem;
   text-align: center;
   max-width: 600px;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border: 3px solid #d4af37;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 255, 240, 0.95));
+  border: 3px solid #FFD700;
   border-radius: 2rem;
-  box-shadow: 0 0 40px rgba(212, 175, 55, 0.3), 0 20px 60px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 12px 40px rgba(77, 150, 255, 0.15), 0 20px 60px rgba(0, 0, 0, 0.1);
   animation: slideUp 0.5s ease-out;
 }
 
@@ -54,7 +54,7 @@
 .alpha-quest-title h1 {
   margin: 0;
   font-size: 3rem;
-  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 100%);
+  background: linear-gradient(135deg, #FF6B6B 0%, #FFD700 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -82,7 +82,7 @@
 .alpha-quest-subtitle {
   margin: 0;
   font-size: 1.1rem;
-  color: #d4af37;
+  color: #FF6B6B;
   margin-bottom: 1rem;
 }
 
@@ -100,19 +100,19 @@
   align-items: center;
   gap: 0.5rem;
   padding: 1.5rem;
-  border: 2px solid #d4af37;
+  border: 2px solid #4D96FF;
   border-radius: 1rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: rgba(0, 0, 0, 0.6);
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.3), 0 4px 12px rgba(0, 0, 0, 0.4);
+  background: rgba(77, 150, 255, 0.08);
+  box-shadow: 0 8px 20px rgba(77, 150, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .alpha-quest-difficulty-btn:hover {
   transform: translateY(-4px);
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.6), 0 8px 20px rgba(212, 175, 55, 0.3);
-  background: rgba(212, 175, 55, 0.1);
+  box-shadow: 0 12px 30px rgba(77, 150, 255, 0.3), 0 8px 20px rgba(77, 150, 255, 0.2);
+  background: rgba(77, 150, 255, 0.15);
 }
 
 .beginner-btn {
@@ -148,33 +148,33 @@
 
 .difficulty-name {
   font-size: 1.1rem;
-  color: #d4af37;
+  color: #FF6B6B;
 }
 
 .difficulty-desc {
   font-size: 0.85rem;
-  color: #a89942;
+  color: #2C3E50;
   font-weight: 500;
 }
 
 .alpha-quest-close-btn {
   margin-top: 1rem;
   padding: 0.75rem 1.5rem;
-  color: #000000;
-  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 100%);
-  border: 2px solid #d4af37;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FFD700 100%);
+  border: 2px solid #FFD700;
   border-radius: 1rem;
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3), 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .alpha-quest-close-btn:hover {
-  background: linear-gradient(135deg, #f0e68c 0%, #d4af37 100%);
+  background: linear-gradient(135deg, #FFD700 0%, #FF6B6B 100%);
   transform: translateY(-2px);
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.8), 0 8px 20px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 12px 30px rgba(255, 107, 107, 0.5), 0 8px 20px rgba(255, 107, 107, 0.3);
 }
 
 /* Game Screen */
@@ -187,10 +187,10 @@
   flex-direction: column;
   gap: 2rem;
   padding: 2rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border: 3px solid #d4af37;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 255, 240, 0.95));
+  border: 3px solid #FFD700;
   border-radius: 2rem;
-  box-shadow: 0 0 40px rgba(212, 175, 55, 0.3), 0 20px 60px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 12px 40px rgba(77, 150, 255, 0.15), 0 20px 60px rgba(0, 0, 0, 0.1);
   animation: slideUp 0.5s ease-out;
 }
 

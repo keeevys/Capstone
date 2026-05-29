@@ -4,10 +4,10 @@
   min-height: 38rem;
   padding: 2rem;
   border-radius: 2rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border: 3px solid #d4af37;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 255, 240, 0.95));
+  border: 3px solid #FFD700;
   min-height: 40rem;
-  box-shadow: 0 0 40px rgba(212, 175, 55, 0.3), 0 20px 60px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 12px 40px rgba(77, 150, 255, 0.15), 0 20px 60px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.5s ease-out;
 }
 
@@ -29,9 +29,9 @@
 
 .cvc-back {
   appearance: none;
-  border: 2px solid #d4af37;
-  background: rgba(0, 0, 0, 0.4);
-  color: #d4af37;
+  border: 2px solid #4D96FF;
+  background: rgba(77, 150, 255, 0.08);
+  color: #FF6B6B;
   border-radius: 1rem;
   padding: 0.75rem 1.5rem;
   font: inherit;
@@ -40,15 +40,15 @@
   letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 8px 20px rgba(77, 150, 255, 0.15);
   text-transform: uppercase;
 }
 
 .cvc-back:hover {
-  background: rgba(212, 175, 55, 0.2);
-  border-color: #f0e68c;
-  color: #f0e68c;
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+  background: rgba(77, 150, 255, 0.15);
+  border-color: #FF6B6B;
+  color: #FFD700;
+  box-shadow: 0 12px 30px rgba(77, 150, 255, 0.3);
   transform: translateY(-2px);
 }
 
@@ -63,27 +63,27 @@
 
 .cvc-tab {
   appearance: none;
-  border: 2px solid #d4af37;
+  border: 2px solid #4D96FF;
   min-height: 2.7rem;
   border-radius: 999px;
   padding: 0.55rem 1rem;
-  background: rgba(0, 0, 0, 0.4);
-  color: #d4af37;
+  background: rgba(77, 150, 255, 0.08);
+  color: #FF6B6B;
   font: inherit;
   font-size: 0.78rem;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 8px 15px rgba(77, 150, 255, 0.15);
   position: relative;
   flex: 1 1 0;
   min-width: 0;
 }
 
 .cvc-tab.active {
-  color: #000000;
-  background: linear-gradient(90deg, #d4af37, #f0e68c);
-  border-color: #f0e68c;
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+  color: #FFFFFF;
+  background: linear-gradient(90deg, #FF6B6B, #FFD700);
+  border-color: #FFD700;
+  box-shadow: 0 12px 25px rgba(255, 107, 107, 0.3);
 }
 
 .cvc-stage {
