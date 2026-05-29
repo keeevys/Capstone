@@ -21,7 +21,7 @@ const moduleCards = {
   },
 };
 
-export default function Modules({ activeModule, onNavigate, onSelectModule, onLogout }) {
+export default function Modules({ activeModule, onNavigate, onSelectModule, onLogout, onComplete, vowelsUnlocked = false, cvcUnlocked = false }) {
   const currentModule = moduleCards[activeModule] ?? moduleCards.alphabet;
   const CurrentGame = currentModule.component;
 
@@ -54,18 +54,24 @@ export default function Modules({ activeModule, onNavigate, onSelectModule, onLo
           <button
             key={key}
             type="button"
-            className={key === activeModule ? 'module-tab active' : 'module-tab'}
+            className={
+              key === activeModule
+                ? `module-tab active${(key === 'vowels' && !vowelsUnlocked) || (key === 'cvc' && !cvcUnlocked) ? ' locked' : ''}`
+                : `module-tab${(key === 'vowels' && !vowelsUnlocked) || (key === 'cvc' && !cvcUnlocked) ? ' locked' : ''}`
+            }
             onClick={() => onSelectModule(key)}
+            disabled={(key === 'vowels' && !vowelsUnlocked) || (key === 'cvc' && !cvcUnlocked)}
           >
             <strong>{module.title}</strong>
             <span>{module.description}</span>
+            {(key === 'vowels' && !vowelsUnlocked) || (key === 'cvc' && !cvcUnlocked) ? <small className="module-tab-lock">Locked</small> : null}
           </button>
         ))}
       </div>
 
       <div className="module-content">
         <div className="module-stage">
-          <CurrentGame onComplete={() => onNavigate('dashboard')} onBack={() => onNavigate('dashboard')} />
+          <CurrentGame onComplete={onComplete} onBack={() => onNavigate('dashboard')} />
         </div>
       </div>
     </section>

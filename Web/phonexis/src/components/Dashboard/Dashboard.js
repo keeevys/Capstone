@@ -27,13 +27,20 @@ const moduleCards = [
   },
 ];
 
-export default function Dashboard({ onNavigate, onSelectModule, onLogout, user }) {
+export default function Dashboard({ onNavigate, onSelectModule, onLogout, user, overallProgress = 0, vowelsUnlocked = false, cvcUnlocked = false }) {
   const openGame = (moduleKey) => {
+    if (moduleKey === 'vowels' && !vowelsUnlocked) {
+      return;
+    }
+
+    if (moduleKey === 'cvc' && !cvcUnlocked) {
+      return;
+    }
+
     onSelectModule(moduleKey);
     onNavigate(moduleKey);
   };
 
-  const overallProgress = 3;
   const firstName = user?.firstName || user?.firstname || user?.user_metadata?.firstname || user?.user_metadata?.firstName || '';
   const lastName = user?.lastName || user?.lastname || user?.user_metadata?.lastname || user?.user_metadata?.lastName || '';
   const emailName = user?.email ? user.email.split('@')[0] : '';
@@ -83,8 +90,9 @@ export default function Dashboard({ onNavigate, onSelectModule, onLogout, user }
           <button
             key={card.key}
             type="button"
-            className={`dashboard-card dashboard-card-${card.accent}`}
+            className={`dashboard-card dashboard-card-${card.accent}${(card.key === 'vowels' && !vowelsUnlocked) || (card.key === 'cvc' && !cvcUnlocked) ? ' locked' : ''}`}
             onClick={() => openGame(card.key)}
+            disabled={(card.key === 'vowels' && !vowelsUnlocked) || (card.key === 'cvc' && !cvcUnlocked)}
           >
             <div className="dashboard-card-icon" aria-hidden="true">
               <span>{card.icon}</span>
@@ -96,10 +104,12 @@ export default function Dashboard({ onNavigate, onSelectModule, onLogout, user }
 
               <div className="dashboard-card-progress">
                 <span>Progress</span>
-                <strong>{card.progress}%</strong>
+                <strong>{(card.key === 'vowels' && !vowelsUnlocked) || (card.key === 'cvc' && !cvcUnlocked) ? 'Locked' : `${card.progress}%`}</strong>
               </div>
 
-              <div className="dashboard-card-button">START LEARNING ✨</div>
+              <div className="dashboard-card-button">
+                {(card.key === 'vowels' && !vowelsUnlocked) || (card.key === 'cvc' && !cvcUnlocked) ? 'Locked' : 'START LEARNING ✨'}
+              </div>
             </div>
           </button>
         ))}

@@ -351,6 +351,7 @@
   display: flex;
   justify-content: center;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .alpha-quest-listen-btn {
@@ -373,6 +374,190 @@
   transform: translateY(-2px);
   background: linear-gradient(135deg, #f0e68c 0%, #d4af37 100%);
   box-shadow: 0 0 25px rgba(212, 175, 55, 0.8), 0 8px 20px rgba(212, 175, 55, 0.3);
+}
+
+.alpha-quest-hint-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  color: #d4af37;
+  background: rgba(212, 175, 55, 0.08);
+  border: 2px solid #d4af37;
+  border-radius: 1rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.2), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.alpha-quest-hint-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: rgba(212, 175, 55, 0.16);
+  box-shadow: 0 0 18px rgba(212, 175, 55, 0.4), 0 8px 20px rgba(212, 175, 55, 0.2);
+}
+
+.alpha-quest-hint-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.alpha-quest-hint-status {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.alpha-quest-hint-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1rem;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #f0e68c;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.15);
+}
+
+.alpha-quest-hint-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 180px;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 1rem;
+  background: rgba(0, 0, 0, 0.35);
+  color: #f8f1c7;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.15);
+}
+
+.alpha-quest-hint-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #a89942;
+}
+
+.alpha-quest-hint-icon {
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.alpha-quest-hint-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.alpha-quest-reward-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  z-index: 1100;
+}
+
+.alpha-quest-reward-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: min(100%, 460px);
+  padding: 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 3px solid #d4af37;
+  border-radius: 2rem;
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.3), 0 20px 60px rgba(0, 0, 0, 0.8);
+  animation: slideUp 0.5s ease-out;
+}
+
+.alpha-quest-reward-emoji {
+  font-size: 3rem;
+}
+
+.alpha-quest-reward-card h2 {
+  margin: 0;
+  color: #f0e68c;
+  font-size: 1.7rem;
+}
+
+.alpha-quest-reward-card p {
+  margin: 0;
+  color: #a89942;
+  line-height: 1.5;
+}
+
+.alpha-quest-reward-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.alpha-quest-reward-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 2px solid #d4af37;
+  background: rgba(212, 175, 55, 0.08);
+  color: #f8f1c7;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.18), 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+.alpha-quest-reward-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(212, 175, 55, 0.16);
+  box-shadow: 0 0 18px rgba(212, 175, 55, 0.35), 0 10px 18px rgba(0, 0, 0, 0.35);
+}
+
+.alpha-quest-reward-btn.health {
+  border-color: #6ee7b7;
+  color: #d1fae5;
+  background: rgba(110, 231, 183, 0.08);
+}
+
+.alpha-quest-reward-btn.hints {
+  border-color: #f59e0b;
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.reward-title {
+  font-size: 1.05rem;
+}
+
+.reward-subtitle {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.alpha-quest-reward-note {
+  font-size: 0.92rem;
+  color: #a89942;
 }
 
 /* Keyboard Hint */
@@ -574,6 +759,10 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .alpha-quest-reward-options {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 480px) {
@@ -619,5 +808,18 @@
 
   .game-over-title {
     font-size: 1.3rem;
+  }
+
+  .alpha-quest-hint-status {
+    gap: 0.75rem;
+  }
+
+  .alpha-quest-reward-card {
+    padding: 1.5rem;
+    gap: 0.85rem;
+  }
+
+  .alpha-quest-reward-card h2 {
+    font-size: 1.35rem;
   }
 }

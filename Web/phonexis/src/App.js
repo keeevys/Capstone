@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
@@ -17,6 +17,91 @@ function App() {
   const [activeModule, setActiveModule] = useState('alphabet');
   const [currentUser, setCurrentUser] = useState(null);
   const [resetEmail, setResetEmail] = useState(null);
+  const [completedPretests, setCompletedPretests] = useState([]);
+  const [vowelsCompleted, setVowelsCompleted] = useState(false);
+  const [cvcCompleted, setCvcCompleted] = useState(false);
+
+  // Build a stable storage key for the logged-in user
+  const getProgressKey = (user) => {
+    if (!user) return null;
+    const id = user.id || user.email || user.user_metadata?.email || JSON.stringify(user);
+    return `phonexis_progress_${String(id)}`;
+  };
+
+  // Load progress for the current user when they log in
+  useEffect(() => {
+    if (!currentUser) return;
+    try {
+      const key = getProgressKey(currentUser);
+      const raw = localStorage.getItem(key);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setCompletedPretests(parsed.completedPretests || []);
+        setVowelsCompleted(!!parsed.vowelsCompleted);
+        setCvcCompleted(!!parsed.cvcCompleted);
+      } else {
+        // initialize empty progress
+        setCompletedPretests([]);
+        setVowelsCompleted(false);
+        setCvcCompleted(false);
+      }
+    } catch (e) {
+      // ignore parse errors
+      setCompletedPretests([]);
+      setVowelsCompleted(false);
+      setCvcCompleted(false);
+    }
+  }, [currentUser]);
+
+  // Persist progress whenever it changes for the logged-in user
+  useEffect(() => {
+    if (!currentUser) return;
+    try {
+      const key = getProgressKey(currentUser);
+      const payload = JSON.stringify({ completedPretests, vowelsCompleted, cvcCompleted });
+      localStorage.setItem(key, payload);
+    } catch (e) {
+      // ignore storage errors
+    }
+  }, [currentUser, completedPretests, vowelsCompleted, cvcCompleted]);
+
+  const vowelsUnlocked = completedPretests.length >= 3;
+  const cvcUnlocked = vowelsCompleted;
+  const completedStages = Math.min(completedPretests.length, 3) + (vowelsCompleted ? 1 : 0) + (cvcCompleted ? 1 : 0);
+  const overallProgress = Math.round((completedStages / 5) * 100);
+
+  const handlePretestComplete = (difficulty) => {
+    setCompletedPretests((currentPretests) => {
+      if (currentPretests.includes(difficulty)) {
+        return currentPretests;
+      }
+
+      return [...currentPretests, difficulty];
+    });
+  };
+
+  const openModule = (moduleKey) => {
+    if (moduleKey === 'vowels' && !vowelsUnlocked) {
+      return;
+    }
+
+    if (moduleKey === 'cvc' && !cvcUnlocked) {
+      return;
+    }
+
+    setActiveModule(moduleKey);
+    setActiveView(moduleKey);
+  };
+
+  const handleVowelsComplete = () => {
+    setVowelsCompleted(true);
+    setActiveView('dashboard');
+  };
+
+  const handleCvcComplete = () => {
+    setCvcCompleted(true);
+    setActiveView('dashboard');
+  };
 
   const handleAuthSuccess = (userProfile) => {
     if (userProfile) {
@@ -53,21 +138,57 @@ function App() {
       case 'alphabet':
         return (
           <AlphabetRecognition
-            onComplete={() => setActiveView('dashboard')}
+            onPretestComplete={handlePretestComplete}
             onBack={() => setActiveView('dashboard')}
           />
         );
       case 'cvc':
+        if (!cvcUnlocked) {
+          return (
+            <Dashboard
+              onNavigate={setActiveView}
+              onSelectModule={openModule}
+              user={currentUser}
+              overallProgress={overallProgress}
+              vowelsUnlocked={vowelsUnlocked}
+              cvcUnlocked={cvcUnlocked}
+              onLogout={() => {
+                setIsAuthenticated(false);
+                setCurrentUser(null);
+                setActiveView('login');
+              }}
+            />
+          );
+        }
+
         return (
           <CVCWords
-            onComplete={() => setActiveView('dashboard')}
+            onComplete={handleCvcComplete}
             onBack={() => setActiveView('dashboard')}
           />
         );
       case 'vowels':
+        if (!vowelsUnlocked) {
+          return (
+            <Dashboard
+              onNavigate={setActiveView}
+              onSelectModule={openModule}
+              user={currentUser}
+              overallProgress={overallProgress}
+              vowelsUnlocked={vowelsUnlocked}
+              onLogout={() => {
+                setIsAuthenticated(false);
+                setCurrentUser(null);
+                setActiveView('login');
+              }}
+            />
+          );
+        }
+
         return (
           <VowelsConsonant
-            onComplete={() => setActiveView('dashboard')}
+            unlocked={vowelsUnlocked}
+            onComplete={handleVowelsComplete}
             onBack={() => setActiveView('dashboard')}
           />
         );
@@ -76,7 +197,19 @@ function App() {
           <Modules
             activeModule={activeModule}
             onNavigate={setActiveView}
-            onSelectModule={setActiveModule}
+            onSelectModule={openModule}
+            vowelsUnlocked={vowelsUnlocked}
+            cvcUnlocked={cvcUnlocked}
+            onComplete={() => {
+              if (activeModule === 'vowels') {
+                handleVowelsComplete();
+                return;
+              }
+
+              if (activeModule === 'cvc') {
+                handleCvcComplete();
+              }
+            }}
             onLogout={() => {
               setIsAuthenticated(false);
               setActiveView('login');
@@ -100,8 +233,11 @@ function App() {
         return (
           <Dashboard
             onNavigate={setActiveView}
-            onSelectModule={setActiveModule}
+            onSelectModule={openModule}
             user={currentUser}
+            overallProgress={overallProgress}
+            vowelsUnlocked={vowelsUnlocked}
+            cvcUnlocked={cvcUnlocked}
             onLogout={() => {
               setIsAuthenticated(false);
               setCurrentUser(null);
