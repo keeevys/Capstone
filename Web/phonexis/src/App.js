@@ -9,7 +9,8 @@ import ResetPassword from './components/ResetPassword';
 import Profile from './components/Profile';
 import AlphabetRecognition from './components/Modules/AlphabetRecognition';
 import CVCWords from './components/Modules/CVCWords';
-import VowelsConsonant from './components/Modules/VowelsConsonant';
+import Vowels from './components/Modules/Vowels';
+import Consonants from './components/Modules/Consonants';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -19,6 +20,7 @@ function App() {
   const [resetEmail, setResetEmail] = useState(null);
   const [completedPretests, setCompletedPretests] = useState([]);
   const [vowelsCompleted, setVowelsCompleted] = useState(false);
+  const [consonantsCompleted, setConsonantsCompleted] = useState(false);
   const [cvcCompleted, setCvcCompleted] = useState(false);
 
   // Build a stable storage key for the logged-in user
@@ -38,11 +40,13 @@ function App() {
         const parsed = JSON.parse(raw);
         setCompletedPretests(parsed.completedPretests || []);
         setVowelsCompleted(!!parsed.vowelsCompleted);
+        setConsonantsCompleted(!!parsed.consonantsCompleted);
         setCvcCompleted(!!parsed.cvcCompleted);
       } else {
         // initialize empty progress
         setCompletedPretests([]);
         setVowelsCompleted(false);
+        setConsonantsCompleted(false);
         setCvcCompleted(false);
       }
     } catch (e) {
@@ -58,17 +62,18 @@ function App() {
     if (!currentUser) return;
     try {
       const key = getProgressKey(currentUser);
-      const payload = JSON.stringify({ completedPretests, vowelsCompleted, cvcCompleted });
+      const payload = JSON.stringify({ completedPretests, vowelsCompleted, consonantsCompleted, cvcCompleted });
       localStorage.setItem(key, payload);
     } catch (e) {
       // ignore storage errors
     }
-  }, [currentUser, completedPretests, vowelsCompleted, cvcCompleted]);
+  }, [currentUser, completedPretests, vowelsCompleted, consonantsCompleted, cvcCompleted]);
 
   const vowelsUnlocked = completedPretests.length >= 3;
-  const cvcUnlocked = vowelsCompleted;
-  const completedStages = Math.min(completedPretests.length, 3) + (vowelsCompleted ? 1 : 0) + (cvcCompleted ? 1 : 0);
-  const overallProgress = Math.round((completedStages / 5) * 100);
+  const consonantsUnlocked = vowelsCompleted;
+  const cvcUnlocked = consonantsCompleted;
+  const completedStages = Math.min(completedPretests.length, 3) + (vowelsCompleted ? 1 : 0) + (consonantsCompleted ? 1 : 0) + (cvcCompleted ? 1 : 0);
+  const overallProgress = Math.round((completedStages / 6) * 100);
 
   const handlePretestComplete = (difficulty) => {
     setCompletedPretests((currentPretests) => {
@@ -85,6 +90,10 @@ function App() {
       return;
     }
 
+    if (moduleKey === 'consonants' && !consonantsUnlocked) {
+      return;
+    }
+
     if (moduleKey === 'cvc' && !cvcUnlocked) {
       return;
     }
@@ -95,6 +104,11 @@ function App() {
 
   const handleVowelsComplete = () => {
     setVowelsCompleted(true);
+    setActiveView('dashboard');
+  };
+
+  const handleConsonantsComplete = () => {
+    setConsonantsCompleted(true);
     setActiveView('dashboard');
   };
 
@@ -151,6 +165,7 @@ function App() {
               user={currentUser}
               overallProgress={overallProgress}
               vowelsUnlocked={vowelsUnlocked}
+              consonantsUnlocked={consonantsUnlocked}
               cvcUnlocked={cvcUnlocked}
               onLogout={() => {
                 setIsAuthenticated(false);
@@ -176,6 +191,8 @@ function App() {
               user={currentUser}
               overallProgress={overallProgress}
               vowelsUnlocked={vowelsUnlocked}
+              consonantsUnlocked={consonantsUnlocked}
+              cvcUnlocked={cvcUnlocked}
               onLogout={() => {
                 setIsAuthenticated(false);
                 setCurrentUser(null);
@@ -186,9 +203,34 @@ function App() {
         }
 
         return (
-          <VowelsConsonant
-            unlocked={vowelsUnlocked}
+          <Vowels
             onComplete={handleVowelsComplete}
+            onBack={() => setActiveView('dashboard')}
+          />
+        );
+      case 'consonants':
+        if (!consonantsUnlocked) {
+          return (
+            <Dashboard
+              onNavigate={setActiveView}
+              onSelectModule={openModule}
+              user={currentUser}
+              overallProgress={overallProgress}
+              vowelsUnlocked={vowelsUnlocked}
+              consonantsUnlocked={consonantsUnlocked}
+              cvcUnlocked={cvcUnlocked}
+              onLogout={() => {
+                setIsAuthenticated(false);
+                setCurrentUser(null);
+                setActiveView('login');
+              }}
+            />
+          );
+        }
+
+        return (
+          <Consonants
+            onComplete={handleConsonantsComplete}
             onBack={() => setActiveView('dashboard')}
           />
         );
@@ -199,10 +241,16 @@ function App() {
             onNavigate={setActiveView}
             onSelectModule={openModule}
             vowelsUnlocked={vowelsUnlocked}
+            consonantsUnlocked={consonantsUnlocked}
             cvcUnlocked={cvcUnlocked}
             onComplete={() => {
               if (activeModule === 'vowels') {
                 handleVowelsComplete();
+                return;
+              }
+
+              if (activeModule === 'consonants') {
+                handleConsonantsComplete();
                 return;
               }
 
@@ -237,6 +285,7 @@ function App() {
             user={currentUser}
             overallProgress={overallProgress}
             vowelsUnlocked={vowelsUnlocked}
+            consonantsUnlocked={consonantsUnlocked}
             cvcUnlocked={cvcUnlocked}
             onLogout={() => {
               setIsAuthenticated(false);

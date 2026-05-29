@@ -12,9 +12,17 @@ const moduleCards = [
   {
     key: 'vowels',
     icon: '🔉',
-    title: 'Vowels & Consonants',
-    description: 'Discover vowels and consonants with audio guides',
+    title: 'Vowels',
+    description: 'Discover vowel sounds with audio guides',
     accent: 'purple',
+    progress: 0,
+  },
+  {
+    key: 'consonants',
+    icon: '🔊',
+    title: 'Consonants',
+    description: 'Explore consonant sounds visually',
+    accent: 'green',
     progress: 0,
   },
   {
@@ -27,9 +35,13 @@ const moduleCards = [
   },
 ];
 
-export default function Dashboard({ onNavigate, onSelectModule, onLogout, user, overallProgress = 0, vowelsUnlocked = false, cvcUnlocked = false }) {
+export default function Dashboard({ onNavigate, onSelectModule, onLogout, user, overallProgress = 0, vowelsUnlocked = false, consonantsUnlocked = false, cvcUnlocked = false }) {
   const openGame = (moduleKey) => {
     if (moduleKey === 'vowels' && !vowelsUnlocked) {
+      return;
+    }
+
+    if (moduleKey === 'consonants' && !consonantsUnlocked) {
       return;
     }
 
@@ -86,33 +98,36 @@ export default function Dashboard({ onNavigate, onSelectModule, onLogout, user, 
       </section>
 
       <section className="dashboard-cards" aria-label="Game modules">
-        {moduleCards.map((card) => (
-          <button
-            key={card.key}
-            type="button"
-            className={`dashboard-card dashboard-card-${card.accent}${(card.key === 'vowels' && !vowelsUnlocked) || (card.key === 'cvc' && !cvcUnlocked) ? ' locked' : ''}`}
-            onClick={() => openGame(card.key)}
-            disabled={(card.key === 'vowels' && !vowelsUnlocked) || (card.key === 'cvc' && !cvcUnlocked)}
-          >
-            <div className="dashboard-card-icon" aria-hidden="true">
-              <span>{card.icon}</span>
-            </div>
-
-            <div className="dashboard-card-copy">
-              <h3>{card.title}</h3>
-              <p>{card.description}</p>
-
-              <div className="dashboard-card-progress">
-                <span>Progress</span>
-                <strong>{(card.key === 'vowels' && !vowelsUnlocked) || (card.key === 'cvc' && !cvcUnlocked) ? 'Locked' : `${card.progress}%`}</strong>
+        {moduleCards.map((card) => {
+          const isLocked = (card.key === 'vowels' && !vowelsUnlocked) || (card.key === 'consonants' && !consonantsUnlocked) || (card.key === 'cvc' && !cvcUnlocked);
+          return (
+            <button
+              key={card.key}
+              type="button"
+              className={`dashboard-card dashboard-card-${card.accent}${isLocked ? ' locked' : ''}`}
+              onClick={() => openGame(card.key)}
+              disabled={isLocked}
+            >
+              <div className="dashboard-card-icon" aria-hidden="true">
+                <span>{card.icon}</span>
               </div>
+
+              <div className="dashboard-card-copy">
+                <h3>{card.title}</h3>
+                <p>{card.description}</p>
+
+                <div className="dashboard-card-progress">
+                  <span>Progress</span>
+                  <strong>{isLocked ? 'Locked' : `${card.progress}%`}</strong>
+                </div>
 
               <div className="dashboard-card-button">
-                {(card.key === 'vowels' && !vowelsUnlocked) || (card.key === 'cvc' && !cvcUnlocked) ? 'Locked' : 'START LEARNING ✨'}
+                {isLocked ? 'Locked' : 'START LEARNING ✨'}
               </div>
             </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </section>
     </section>
   );
