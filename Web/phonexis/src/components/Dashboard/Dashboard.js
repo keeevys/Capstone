@@ -7,7 +7,7 @@ const moduleCards = [
     title: 'Alphabet Recognition',
     description: 'Learn letters and sounds with fun tracing activities',
     accent: 'blue',
-    progress: 0,
+    progress: 0, // Will be overridden with alphabetProgress
   },
   {
     key: 'vowels',
@@ -35,7 +35,7 @@ const moduleCards = [
   },
 ];
 
-export default function Dashboard({ onNavigate, onSelectModule, onLogout, user, overallProgress = 0, vowelsUnlocked = false, consonantsUnlocked = false, cvcUnlocked = false }) {
+export default function Dashboard({ onNavigate, onSelectModule, onLogout, user, overallProgress = 0, alphabetProgress = 0, vowelsUnlocked = false, consonantsUnlocked = false, cvcUnlocked = false }) {
   const openGame = (moduleKey) => {
     if (moduleKey === 'vowels' && !vowelsUnlocked) {
       return;
@@ -103,6 +103,8 @@ export default function Dashboard({ onNavigate, onSelectModule, onLogout, user, 
       <section className="dashboard-cards" aria-label="Game modules">
         {moduleCards.map((card) => {
           const isLocked = (card.key === 'vowels' && !vowelsUnlocked) || (card.key === 'consonants' && !consonantsUnlocked) || (card.key === 'cvc' && !cvcUnlocked);
+          // Use alphabetProgress for alphabet card, otherwise use card.progress
+          const cardProgress = card.key === 'alphabet' ? alphabetProgress : card.progress;
           return (
             <button
               key={card.key}
@@ -121,7 +123,7 @@ export default function Dashboard({ onNavigate, onSelectModule, onLogout, user, 
 
                 <div className="dashboard-card-progress">
                   <span>Progress</span>
-                  <strong>{isLocked ? 'Locked' : `${card.progress}%`}</strong>
+                  <strong>{isLocked ? 'Locked' : `${cardProgress}%`}</strong>
                 </div>
 
               <div className="dashboard-card-button">

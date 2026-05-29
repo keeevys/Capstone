@@ -20,6 +20,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [resetEmail, setResetEmail] = useState(null);
   const [completedPretests, setCompletedPretests] = useState([]);
+  const [completedAlphabetModes, setCompletedAlphabetModes] = useState([]); // Track easy, medium, hard
   const [vowelsCompleted, setVowelsCompleted] = useState(false);
   const [consonantsCompleted, setConsonantsCompleted] = useState(false);
   const [cvcCompleted, setCvcCompleted] = useState(false);
@@ -40,12 +41,14 @@ function App() {
       if (raw) {
         const parsed = JSON.parse(raw);
         setCompletedPretests(parsed.completedPretests || []);
+        setCompletedAlphabetModes(parsed.completedAlphabetModes || []);
         setVowelsCompleted(!!parsed.vowelsCompleted);
         setConsonantsCompleted(!!parsed.consonantsCompleted);
         setCvcCompleted(!!parsed.cvcCompleted);
       } else {
         // initialize empty progress
         setCompletedPretests([]);
+        setCompletedAlphabetModes([]);
         setVowelsCompleted(false);
         setConsonantsCompleted(false);
         setCvcCompleted(false);
@@ -53,6 +56,7 @@ function App() {
     } catch (e) {
       // ignore parse errors
       setCompletedPretests([]);
+      setCompletedAlphabetModes([]);
       setVowelsCompleted(false);
       setCvcCompleted(false);
     }
@@ -63,12 +67,12 @@ function App() {
     if (!currentUser) return;
     try {
       const key = getProgressKey(currentUser);
-      const payload = JSON.stringify({ completedPretests, vowelsCompleted, consonantsCompleted, cvcCompleted });
+      const payload = JSON.stringify({ completedPretests, completedAlphabetModes, vowelsCompleted, consonantsCompleted, cvcCompleted });
       localStorage.setItem(key, payload);
     } catch (e) {
       // ignore storage errors
     }
-  }, [currentUser, completedPretests, vowelsCompleted, consonantsCompleted, cvcCompleted]);
+  }, [currentUser, completedPretests, completedAlphabetModes, vowelsCompleted, consonantsCompleted, cvcCompleted]);
 
   // Background music effect
   useEffect(() => {
@@ -99,6 +103,10 @@ function App() {
   const vowelsUnlocked = completedPretests.length >= 3;
   const consonantsUnlocked = vowelsCompleted;
   const cvcUnlocked = consonantsCompleted;
+  
+  // Calculate alphabet progress: 100% only when all 3 modes completed, otherwise: (completed / 3) * 100
+  const alphabetProgress = completedAlphabetModes.length === 3 ? 100 : Math.round((completedAlphabetModes.length / 3) * 100);
+  
   const completedStages = Math.min(completedPretests.length, 3) + (vowelsCompleted ? 1 : 0) + (consonantsCompleted ? 1 : 0) + (cvcCompleted ? 1 : 0);
   const overallProgress = Math.round((completedStages / 6) * 100);
 
@@ -109,6 +117,15 @@ function App() {
       }
 
       return [...currentPretests, difficulty];
+    });
+  };
+
+  const handleAlphabetModeComplete = (mode) => {
+    setCompletedAlphabetModes((currentModes) => {
+      if (currentModes.includes(mode)) {
+        return currentModes;
+      }
+      return [...currentModes, mode];
     });
   };
 
@@ -180,7 +197,9 @@ function App() {
         return (
           <AlphabetRecognition
             onPretestComplete={handlePretestComplete}
+            onProgressUpdate={handleAlphabetModeComplete}
             onBack={() => setActiveView('dashboard')}
+            completedModes={completedAlphabetModes}
           />
         );
       case 'cvc':
@@ -191,6 +210,7 @@ function App() {
               onSelectModule={openModule}
               user={currentUser}
               overallProgress={overallProgress}
+              alphabetProgress={alphabetProgress}
               vowelsUnlocked={vowelsUnlocked}
               consonantsUnlocked={consonantsUnlocked}
               cvcUnlocked={cvcUnlocked}
@@ -217,6 +237,7 @@ function App() {
               onSelectModule={openModule}
               user={currentUser}
               overallProgress={overallProgress}
+              alphabetProgress={alphabetProgress}
               vowelsUnlocked={vowelsUnlocked}
               consonantsUnlocked={consonantsUnlocked}
               cvcUnlocked={cvcUnlocked}
@@ -243,6 +264,7 @@ function App() {
               onSelectModule={openModule}
               user={currentUser}
               overallProgress={overallProgress}
+              alphabetProgress={alphabetProgress}
               vowelsUnlocked={vowelsUnlocked}
               consonantsUnlocked={consonantsUnlocked}
               cvcUnlocked={cvcUnlocked}
@@ -311,6 +333,7 @@ function App() {
             onSelectModule={openModule}
             user={currentUser}
             overallProgress={overallProgress}
+            alphabetProgress={alphabetProgress}
             vowelsUnlocked={vowelsUnlocked}
             consonantsUnlocked={consonantsUnlocked}
             cvcUnlocked={cvcUnlocked}

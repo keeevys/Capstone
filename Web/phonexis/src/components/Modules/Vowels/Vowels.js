@@ -9,26 +9,12 @@ const vowels = [
   { letter: 'U', sound: 'uh', word: 'Umbrella', icon: '☂️' },
 ];
 
-const doubleLetterVowels = [
-  { letters: 'AA', sound: 'aah', word: 'Baal', icon: '📖' },
-  { letters: 'EE', sound: 'eee', word: 'Bee', icon: '🐝' },
-  { letters: 'II', sound: 'iii', word: 'Radii', icon: '📐' },
-  { letters: 'OO', sound: 'ooo', word: 'Moon', icon: '🌙' },
-  { letters: 'UU', sound: 'uuu', word: 'Vacuum', icon: '🧹' },
-];
-
 const pretestActivityDeck = [
   { letter: 'A', prompt: '_pple', icon: '🍎', choices: ['A', 'E', 'I', 'O', 'U'] },
   { letter: 'E', prompt: '_lephant', icon: '🐘', choices: ['A', 'E', 'I', 'O', 'U'] },
   { letter: 'I', prompt: '_ce cream', icon: '🍦', choices: ['A', 'E', 'I', 'O', 'U'] },
   { letter: 'O', prompt: '_ctopus', icon: '🐙', choices: ['A', 'E', 'I', 'O', 'U'] },
   { letter: 'U', prompt: '_mbrella', icon: '☂️', choices: ['A', 'E', 'I', 'O', 'U'] },
-  // Double letter vowel activities
-  { letter: 'AA', prompt: 'B__l', icon: '📖', choices: ['AA', 'EE', 'II', 'OO', 'UU'] },
-  { letter: 'EE', prompt: 'B__', icon: '🐝', choices: ['AA', 'EE', 'II', 'OO', 'UU'] },
-  { letter: 'II', prompt: 'Rad__', icon: '📐', choices: ['AA', 'EE', 'II', 'OO', 'UU'] },
-  { letter: 'OO', prompt: 'M__n', icon: '🌙', choices: ['AA', 'EE', 'II', 'OO', 'UU'] },
-  { letter: 'UU', prompt: 'Vac__m', icon: '🧹', choices: ['AA', 'EE', 'II', 'OO', 'UU'] },
 ];
 
 const videos = [
@@ -58,7 +44,6 @@ const videos = [
 export default function Vowels({ onComplete, onBack }) {
   const [mode, setMode] = useState('learning');
   const [selectedLetter, setSelectedLetter] = useState(vowels[0].letter);
-  const [selectedDoubleVowel, setSelectedDoubleVowel] = useState(doubleLetterVowels[0].letters);
   const [pretestIndex, setPretestIndex] = useState(0);
   const [pretestChoice, setPretestChoice] = useState('');
   const [pretestResult, setPretestResult] = useState(null);
@@ -67,10 +52,8 @@ export default function Vowels({ onComplete, onBack }) {
   const [videosWatched, setVideosWatched] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(null);
   const [videoProgress, setVideoProgress] = useState({});
-  const [lessonShowDoubleVowels, setLessonShowDoubleVowels] = useState(false);
 
   const selectedItem = vowels.find((item) => item.letter === selectedLetter) ?? vowels[0];
-  const selectedDoubleItem = doubleLetterVowels.find((item) => item.letters === selectedDoubleVowel) ?? doubleLetterVowels[0];
   const currentPretest = pretestActivityDeck[pretestIndex];
   const allVideosWatched = videosWatched.length === videos.length;
 
@@ -98,7 +81,6 @@ export default function Vowels({ onComplete, onBack }) {
     setMode(nextMode);
     if (nextMode === 'lesson') {
       setFeedback('Choose a vowel to hear its sound.');
-      setLessonShowDoubleVowels(false);
     }
     resetPretest();
   };
@@ -133,18 +115,8 @@ export default function Vowels({ onComplete, onBack }) {
     setFeedback(`Selected ${nextItem.letter} - ${nextItem.word}.`);
   };
 
-  const handlePickDoubleVowel = (letters) => {
-    const nextItem = doubleLetterVowels.find((item) => item.letters === letters) ?? doubleLetterVowels[0];
-    setSelectedDoubleVowel(nextItem.letters);
-    setFeedback(`Selected ${nextItem.letters} - ${nextItem.word}.`);
-  };
-
   const speakCurrent = () => {
     speakText(`${selectedItem.letter}, ${selectedItem.sound}`, `Speaking ${selectedItem.letter} sound.`);
-  };
-
-  const speakCurrentDouble = () => {
-    speakText(`${selectedDoubleItem.letters}, ${selectedDoubleItem.sound}`, `Speaking ${selectedDoubleItem.letters} sound.`);
   };
 
   const handlePretestCheck = () => {
@@ -317,105 +289,44 @@ export default function Vowels({ onComplete, onBack }) {
         </div>
       ) : mode === 'lesson' ? (
         <div className="lesson-stage">
-          {!lessonShowDoubleVowels ? (
-            <>
-              <div className="lesson-header">
-                <h3>Vowel Sounds Lesson</h3>
-                <p>Click on a vowel to hear its sound</p>
-              </div>
+          <div className="lesson-header">
+            <h3>Vowel Sounds Lesson</h3>
+            <p>Click on a vowel to hear its sound</p>
+          </div>
 
-              <div className="vowels-picker" aria-label="Vowel choices">
-                {vowels.map((item) => (
-                  <button
-                    key={item.letter}
-                    type="button"
-                    className={item.letter === selectedLetter ? 'vowel-tile active' : 'vowel-tile'}
-                    onClick={() => handlePick(item.letter)}
-                  >
-                    <span className="vowel-tile-letter">{item.letter}</span>
-                    <span className="vowel-tile-icon" aria-hidden="true">
-                      {item.icon}
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              <div className="vowels-stage">
-                <span className="vowels-letter">{selectedItem.letter}</span>
-
-                <div className="vowels-object">
-                  <span className="vowels-object-icon" aria-hidden="true">
-                    {selectedItem.icon}
-                  </span>
-                  <p className="vowels-object-word">{selectedItem.word}</p>
-                  <p className="vowels-object-sound">Sound: "{selectedItem.sound}"</p>
-                </div>
-
-                <button type="button" className="vowels-listen" onClick={speakCurrent}>
-                  🔊 LISTEN TO SOUND
-                </button>
-
-                <p className="game-feedback">{feedback}</p>
-              </div>
-
+          <div className="vowels-picker" aria-label="Vowel choices">
+            {vowels.map((item) => (
               <button
+                key={item.letter}
                 type="button"
-                className="lesson-nav-btn"
-                onClick={() => setLessonShowDoubleVowels(true)}
+                className={item.letter === selectedLetter ? 'vowel-tile active' : 'vowel-tile'}
+                onClick={() => handlePick(item.letter)}
               >
-                NEXT: DOUBLE LETTER VOWELS →
+                <span className="vowel-tile-letter">{item.letter}</span>
+                <span className="vowel-tile-icon" aria-hidden="true">
+                  {item.icon}
+                </span>
               </button>
-            </>
-          ) : (
-            <>
-              <div className="lesson-header">
-                <h3>Double Letter Vowels Lesson</h3>
-                <p>Click on a double letter vowel to hear its sound</p>
-              </div>
+            ))}
+          </div>
 
-              <div className="vowels-picker" aria-label="Double vowel choices">
-                {doubleLetterVowels.map((item) => (
-                  <button
-                    key={item.letters}
-                    type="button"
-                    className={item.letters === selectedDoubleVowel ? 'vowel-tile active' : 'vowel-tile'}
-                    onClick={() => handlePickDoubleVowel(item.letters)}
-                  >
-                    <span className="vowel-tile-letter">{item.letters}</span>
-                    <span className="vowel-tile-icon" aria-hidden="true">
-                      {item.icon}
-                    </span>
-                  </button>
-                ))}
-              </div>
+          <div className="vowels-stage">
+            <span className="vowels-letter">{selectedItem.letter}</span>
 
-              <div className="vowels-stage">
-                <span className="vowels-letter">{selectedDoubleItem.letters}</span>
+            <div className="vowels-object">
+              <span className="vowels-object-icon" aria-hidden="true">
+                {selectedItem.icon}
+              </span>
+              <p className="vowels-object-word">{selectedItem.word}</p>
+              <p className="vowels-object-sound">Sound: "{selectedItem.sound}"</p>
+            </div>
 
-                <div className="vowels-object">
-                  <span className="vowels-object-icon" aria-hidden="true">
-                    {selectedDoubleItem.icon}
-                  </span>
-                  <p className="vowels-object-word">{selectedDoubleItem.word}</p>
-                  <p className="vowels-object-sound">Sound: "{selectedDoubleItem.sound}"</p>
-                </div>
+            <button type="button" className="vowels-listen" onClick={speakCurrent}>
+              🔊 LISTEN TO SOUND
+            </button>
 
-                <button type="button" className="vowels-listen" onClick={speakCurrentDouble}>
-                  🔊 LISTEN TO SOUND
-                </button>
-
-                <p className="game-feedback">{feedback}</p>
-              </div>
-
-              <button
-                type="button"
-                className="lesson-nav-btn"
-                onClick={() => setLessonShowDoubleVowels(false)}
-              >
-                ← BACK: SINGLE VOWELS
-              </button>
-            </>
-          )}
+            <p className="game-feedback">{feedback}</p>
+          </div>
         </div>
       ) : (
         <div className="pretest-stage">

@@ -31,7 +31,7 @@ const alphabet = [
   { letter: 'Z', word: 'Zebra', icon: '🦓' },
 ];
 
-export default function AlphabetRecognition({ onPretestComplete, onBack }) {
+export default function AlphabetRecognition({ onPretestComplete, onBack, onProgressUpdate, completedModes = [] }) {
   const [selectedLetter, setSelectedLetter] = useState(alphabet[0]);
   const [feedback, setFeedback] = useState('Choose a letter to see its sample object.');
   const [mode, setMode] = useState('learning'); // 'learning' or 'pretest'
@@ -176,6 +176,11 @@ export default function AlphabetRecognition({ onPretestComplete, onBack }) {
         setMode('learning');
         setCurrentPretestLetter(null);
         setHasListened(false);
+
+        // Notify parent of mode completion and update progress
+        if (typeof onProgressUpdate === 'function') {
+          onProgressUpdate(difficulty);
+        }
 
         if (typeof onPretestComplete === 'function') {
           onPretestComplete(difficulty);
