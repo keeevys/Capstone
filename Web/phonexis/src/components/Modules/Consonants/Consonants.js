@@ -18,6 +18,10 @@ const consonants = [
   { letter: 'R', word: 'Rabbit', icon: '🐰' },
   { letter: 'S', word: 'Sun', icon: '☀️' },
   { letter: 'T', word: 'Tiger', icon: '🐯' },
+  { letter: 'W', word: 'Wolf', icon: '🐺' },
+  { letter: 'X', word: 'Xylophone', icon: '🎹' },
+  { letter: 'Y', word: 'Yoyo', icon: '🪀' },
+  { letter: 'Z', word: 'Zebra', icon: '🦓' },
 ];
 
 export default function Consonants({ onComplete, onBack }) {
