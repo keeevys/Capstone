@@ -6,10 +6,10 @@
 .alphabet-module {
   border-radius: 2rem;
   padding: 2rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border: 3px solid #d4af37;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 255, 240, 0.95));
+  border: 3px solid #FFD700;
   min-height: 40rem;
-  box-shadow: 0 0 40px rgba(212, 175, 55, 0.3), 0 20px 60px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 12px 40px rgba(77, 150, 255, 0.15), 0 20px 60px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.5s ease-out;
 }
 
@@ -56,18 +56,18 @@
   font-size: clamp(5.5rem, 10vw, 7.5rem);
   line-height: 1;
   font-weight: 800;
-  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 100%);
+  background: linear-gradient(135deg, #FF6B6B 0%, #FFD700 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+  text-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
 }
 
 .alphabet-object-panel {
   display: inline-flex;
   align-items: center;
   gap: 0.8rem;
-  color: #d4af37;
+  color: #FF6B6B;
   padding: 0.35rem 0.2rem;
 }
 
@@ -81,13 +81,13 @@
   text-align: center;
   font-size: 0.98rem;
   font-weight: 500;
-  color: #d4af37;
+  color: #FF6B6B;
 }
 
 .alphabet-object-caption {
   margin: 0.18rem 0 0;
   text-align: center;
-  color: #a89942;
+  color: #2C3E50;
 }
 
 .alphabet-actions {

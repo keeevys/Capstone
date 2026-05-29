@@ -9,10 +9,10 @@
   width: min(100%, 40rem);
   padding: 3.5rem 3rem 2.5rem;
   border-radius: 2rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 255, 240, 0.95));
   backdrop-filter: blur(10px);
-  border: 3px solid #d4af37;
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.2), 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  border: 3px solid #FFD700;
+  box-shadow: 0 12px 40px rgba(77, 150, 255, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.1);
   display: grid;
   justify-items: center;
   gap: 1.5rem;
@@ -36,20 +36,20 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 50%, #d4af37 100%);
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.6),
-              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #FF6B6B 0%, #FFD700 50%, #4D96FF 100%);
+  box-shadow: 0 8px 30px rgba(255, 107, 107, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
   animation: float 3s ease-in-out infinite;
-  color: #000000;
+  color: #FFFFFF;
   font-size: 3rem;
 }
 
 .login-copy h2 {
   margin: 0;
-  color: #d4af37;
+  color: #FF6B6B;
   font-size: clamp(1.8rem, 4vw, 2.8rem);
   font-weight: 700;
-  background: linear-gradient(135deg, #d4af37, #f0e68c);
+  background: linear-gradient(135deg, #FF6B6B, #FFD700);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -57,7 +57,7 @@
 
 .login-copy p {
   margin: 0;
-  color: #a89942;
+  color: #2C3E50;
   font-size: 1.05rem;
   letter-spacing: 0.3px;
 }
@@ -76,7 +76,7 @@
 
 .login-field-label {
   margin-left: 0.5rem;
-  color: #d4af37;
+  color: #FF6B6B;
   font-size: 0.95rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -89,23 +89,23 @@
   align-items: center;
   height: 3.5rem;
   border-radius: 1.2rem;
-  border: 2px solid #d4af37;
-  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid #4D96FF;
+  background: rgba(255, 255, 255, 0.7);
   overflow: hidden;
   transition: all 0.3s ease;
 }
 
 .login-field-box:focus-within {
-  border-color: #f0e68c;
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5),
-              inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  border-color: #FF6B6B;
+  box-shadow: 0 8px 20px rgba(77, 150, 255, 0.3),
+              inset 0 2px 4px rgba(0, 0, 0, 0.05);
   transform: translateY(-2px);
 }
 
 .login-field-icon {
   display: grid;
   place-items: center;
-  color: #d4af37;
+  color: #FF6B6B;
   font-size: 1.3rem;
 }
 
@@ -114,27 +114,27 @@
   border: 0;
   outline: none;
   background: transparent;
-  color: #d4af37;
+  color: #2C3E50;
   padding: 0 1.2rem 0 0.5rem;
   font-size: 1rem;
   letter-spacing: 0.3px;
 }
 
 .login-field input::placeholder {
-  color: #a89942;
+  color: #9C9C9C;
 }
 
 .login-submit {
   height: 3.5rem;
   border: 0;
   border-radius: 1.2rem;
-  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 100%);
-  color: #000000;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FFD700 100%);
+  color: #FFFFFF;
   font-size: 1.1rem;
   font-weight: 700;
   letter-spacing: 1px;
   cursor: pointer;
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
   margin-top: 0.5rem;
   position: relative;
   overflow: hidden;
@@ -157,7 +157,7 @@
 
 .login-submit:hover {
   transform: translateY(-3px);
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.8);
+  box-shadow: 0 12px 30px rgba(255, 107, 107, 0.5);
 }
 
 .login-submit:active {
@@ -168,7 +168,7 @@
   appearance: none;
   border: 0;
   background: transparent;
-  color: #a89942;
+  color: #2C3E50;
   font-size: 1rem;
   cursor: pointer;
   text-align: center;
@@ -176,23 +176,23 @@
 }
 
 .login-link span {
-  color: #d4af37;
+  color: #FF6B6B;
   font-weight: 700;
   text-decoration: none;
-  border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+  border-bottom: 2px solid rgba(255, 107, 107, 0.3);
   transition: all 0.3s ease;
 }
 
 .login-link:hover span {
-  border-bottom-color: #d4af37;
-  color: #f0e68c;
+  border-bottom-color: #FF6B6B;
+  color: #FFD700;
 }
 
 .login-forgot-password {
   appearance: none;
   border: 0;
   background: transparent;
-  color: #d4af37;
+  color: #FF6B6B;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -203,7 +203,7 @@
 }
 
 .login-forgot-password:hover {
-  color: #f0e68c;
+  color: #FFD700;
   text-decoration: underline;
 }
 

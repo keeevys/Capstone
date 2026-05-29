@@ -7,10 +7,10 @@
 
 .profile-back {
   appearance: none;
-  border: 2px solid #d4af37;
+  border: 2px solid #4D96FF;
   border-radius: 1.2rem;
-  background: rgba(0, 0, 0, 0.4);
-  color: #d4af37;
+  background: rgba(77, 150, 255, 0.08);
+  color: #FF6B6B;
   padding: 0.9rem 1.5rem;
   cursor: pointer;
   font-weight: 700;
@@ -19,22 +19,22 @@
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 8px 20px rgba(77, 150, 255, 0.15);
 }
 
 .profile-back:hover {
-  background: rgba(212, 175, 55, 0.2);
-  border-color: #f0e68c;
-  color: #f0e68c;
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+  background: rgba(77, 150, 255, 0.15);
+  border-color: #FF6B6B;
+  color: #FFD700;
+  box-shadow: 0 12px 30px rgba(77, 150, 255, 0.3);
   transform: translateY(-2px);
 }
 
 .profile-header {
   border-radius: 1.8rem;
-  background: linear-gradient(135deg, #d4af37 0%, #f0e68c 100%);
+  background: linear-gradient(135deg, #FF6B6B 0%, #FFD700 100%);
   padding: 2.5rem;
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.5), 0 20px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 12px 40px rgba(255, 107, 107, 0.3), 0 20px 40px rgba(0, 0, 0, 0.1);
   animation: slideDown 0.6s ease-out;
 }
 
@@ -110,7 +110,7 @@
   appearance: none;
   border: 0;
   background: rgba(255, 255, 255, 0.9);
-  color: #666;
+  color: #2C3E50;
   padding: 1.2rem 2rem;
   cursor: pointer;
   font-weight: 700;
@@ -133,14 +133,14 @@
 }
 
 .profile-tab:hover {
-  color: #667eea;
+  color: #FF6B6B;
   background: #ffffff;
 }
 
 .profile-tab.active {
-  color: #ffffff;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  border-bottom-color: #f093fb;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #FF6B6B, #FFD700);
+  border-bottom-color: #FFD700;
 }
 
 .profile-info-tab,
@@ -172,14 +172,14 @@
   gap: 1.5rem;
   padding: 1.5rem;
   border-radius: 1.2rem;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(240, 147, 251, 0.05));
-  border: 1px solid rgba(102, 126, 234, 0.15);
+  background: linear-gradient(135deg, rgba(77, 150, 255, 0.08), rgba(255, 107, 107, 0.05));
+  border: 1px solid rgba(77, 150, 255, 0.15);
   transition: all 0.3s ease;
 }
 
 .profile-info-field:hover {
-  border-color: #667eea;
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.1);
+  border-color: #4D96FF;
+  box-shadow: 0 10px 25px rgba(77, 150, 255, 0.1);
   transform: translateY(-2px);
 }
 
@@ -191,7 +191,7 @@
 .profile-info-label {
   margin: 0;
   font-size: 0.85rem;
-  color: #667eea;
+  color: #FF6B6B;
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
@@ -200,7 +200,7 @@
 .profile-info-value {
   margin: 0.5rem 0 0;
   font-size: 1.1rem;
-  color: #1a1a2e;
+  color: #2C3E50;
   font-weight: 700;
   word-break: break-all;
   letter-spacing: -0.3px;

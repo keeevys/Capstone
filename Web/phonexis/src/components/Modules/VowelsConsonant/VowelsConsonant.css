@@ -2,11 +2,11 @@
   min-height: 40rem;
   padding: 2rem;
   border-radius: 2rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border: 3px solid #d4af37;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 255, 240, 0.95));
+  border: 3px solid #FFD700;
   display: grid;
   gap: 1.5rem;
-  box-shadow: 0 0 40px rgba(212, 175, 55, 0.3), 0 20px 60px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 12px 40px rgba(77, 150, 255, 0.15), 0 20px 60px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.5s ease-out;
 }
 
@@ -37,9 +37,9 @@
 
 .mode-pill {
   appearance: none;
-  border: 2px solid #d4af37;
-  background: rgba(0, 0, 0, 0.4);
-  color: #d4af37;
+  border: 2px solid #4D96FF;
+  background: rgba(77, 150, 255, 0.08);
+  color: #FF6B6B;
   border-radius: 1.2rem;
   padding: 0.75rem 1.5rem;
   font: inherit;
@@ -50,12 +50,12 @@
   flex: 1 1 0;
   min-width: 0;
   transition: all 0.3s ease;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 8px 15px rgba(77, 150, 255, 0.15);
 }
 
 .mode-pill:hover {
-  border-color: #f0e68c;
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+  border-color: #FF6B6B;
+  box-shadow: 0 12px 25px rgba(77, 150, 255, 0.3);
 }
 
 .mode-pill.active {
