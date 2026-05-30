@@ -1,10 +1,21 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import './CVCWords.css';
 
 const cvcTypes = [
+  { id: 'learning', label: 'Learning Materials' },
   { id: 'families', label: 'Word Families' },
   { id: 'selection', label: 'Word Selection' },
   { id: 'building', label: 'Word Building' },
+];
+
+const videos = [
+  {
+    id: 1,
+    title: 'CVC Word Introduction',
+    description: 'Watch how consonant-vowel-consonant words are formed and sounded out.',
+    url: '/cvc-video/video1.mp4',
+    duration: '5:00',
+  },
 ];
 
 const wordFamilies = [
@@ -128,8 +139,8 @@ const wordBuildingDeck = [
 
 const getRandomBuildingWord = () => wordBuildingDeck[Math.floor(Math.random() * wordBuildingDeck.length)];
 
-export default function CVCWords({ onComplete, onBack }) {
-  const [activeType, setActiveType] = useState('families');
+export default function CVCWords({ onComplete, onBack, initialVideosWatched = [], onVideosWatchedChange }) {
+  const [activeType, setActiveType] = useState('learning');
   const [selectedFamily, setSelectedFamily] = useState(wordFamilies[0].family);
   const [selectedWord, setSelectedWord] = useState(wordSelection[0]);
   const [selectionIndex, setSelectionIndex] = useState(0);
@@ -140,7 +151,15 @@ export default function CVCWords({ onComplete, onBack }) {
   const [buildingChoice, setBuildingChoice] = useState(buildingWord.choices[0]);
   const [buildingResult, setBuildingResult] = useState(null);
   const [buildingMessage, setBuildingMessage] = useState('Choose the missing letter.');
-  const [feedback, setFeedback] = useState('Choose a word family to begin.');
+  const [feedback, setFeedback] = useState('Watch the learning materials video to unlock the CVC activities.');
+  const [videosWatched, setVideosWatched] = useState([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(null);
+
+  useEffect(() => {
+    setVideosWatched(Array.isArray(initialVideosWatched) ? initialVideosWatched : []);
+  }, [initialVideosWatched]);
+
+  const allVideosWatched = videosWatched.length === videos.length;
 
   const pickRandomBuildingWord = (excludeTarget) => {
     const availableWords = wordBuildingDeck.filter((item) => item.target !== excludeTarget);
@@ -167,7 +186,18 @@ export default function CVCWords({ onComplete, onBack }) {
   );
 
   const handleTypeChange = (typeId) => {
+    if (typeId !== 'learning' && !allVideosWatched) {
+      setActiveType('learning');
+      setFeedback('Watch the learning materials video to unlock the CVC activities.');
+      return;
+    }
+
     setActiveType(typeId);
+
+    if (typeId === 'learning') {
+      setFeedback('Watch the CVC introduction video to unlock the activities.');
+      return;
+    }
 
     if (typeId === 'families') {
       setFeedback('Choose a family and match the words.');
@@ -186,6 +216,34 @@ export default function CVCWords({ onComplete, onBack }) {
     setBuildingResult(null);
     setBuildingMessage('Choose the missing letter.');
     setFeedback('Build the word by choosing the correct letter.');
+  };
+
+  const handleVideoWatched = (videoId) => {
+    setVideosWatched((currentVideos) => {
+      if (currentVideos.includes(videoId)) {
+        return currentVideos;
+      }
+
+      const nextVideos = [...currentVideos, videoId];
+
+      if (typeof onVideosWatchedChange === 'function') {
+        onVideosWatchedChange(nextVideos);
+      }
+
+      return nextVideos;
+    });
+  };
+
+  const handlePlayVideo = (index) => {
+    setCurrentVideoIndex(index);
+  };
+
+  const handleVideoEnd = (videoId) => {
+    handleVideoWatched(videoId);
+  };
+
+  const closeVideoPlayer = () => {
+    setCurrentVideoIndex(null);
   };
 
   const handleFamilyPick = (family) => {
@@ -311,6 +369,81 @@ export default function CVCWords({ onComplete, onBack }) {
     </div>
   );
 
+  const renderLearningMaterials = () => (
+    <div className="cvc-learning-materials">
+      {currentVideoIndex !== null ? (
+        <div className="cvc-video-player-modal">
+          <button type="button" className="cvc-video-close-btn" onClick={closeVideoPlayer}>
+            ✕
+          </button>
+          <div className="cvc-video-player-container">
+            <div className="cvc-video-player">
+              <video
+                key={`video-${videos[currentVideoIndex].id}`}
+                width="100%"
+                height="100%"
+                controls
+                autoPlay
+                onEnded={() => handleVideoEnd(videos[currentVideoIndex].id)}
+              >
+                <source src={videos[currentVideoIndex].url} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            <div className="cvc-video-player-info">
+              <h3>{videos[currentVideoIndex].title}</h3>
+              <p>{videos[currentVideoIndex].description}</p>
+              <div className="cvc-video-watched-notice">
+                <p className="cvc-watched-notice-text">
+                  The video will be marked as watched once you finish watching it completely.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {currentVideoIndex === null ? (
+        <>
+          <div className="cvc-learning-header">
+            <h3>Learning Materials</h3>
+            <p>Watch the CVC video to unlock the activities below.</p>
+          </div>
+
+          <div className="cvc-videos-grid">
+            {videos.map((video, index) => (
+              <div key={video.id} className="cvc-video-card">
+                <div className="cvc-video-thumbnail">
+                  <span className="cvc-video-icon">🎬</span>
+                  {videosWatched.includes(video.id) ? <span className="cvc-video-watched-badge">✓ Watched</span> : null}
+                </div>
+                <div className="cvc-video-info">
+                  <h4>{video.title}</h4>
+                  <p>{video.description}</p>
+                  <span className="cvc-video-duration">{video.duration}</span>
+                </div>
+                <button
+                  type="button"
+                  className={`cvc-video-play-btn${videosWatched.includes(video.id) ? ' watched' : ''}`}
+                  onClick={() => handlePlayVideo(index)}
+                >
+                  ▶ {videosWatched.includes(video.id) ? 'REWATCH' : 'PLAY'}
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div className="cvc-learning-progress">
+            <div className="cvc-progress-bar">
+              <div className="cvc-progress-fill" style={{ width: `${(videosWatched.length / videos.length) * 100}%` }} />
+            </div>
+            <p className="cvc-progress-label">{videosWatched.length} of {videos.length} videos watched</p>
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
+
   const renderSelection = () => (
     <div className="cvc-stage cvc-selection-stage">
       <div className="cvc-selection-header">
@@ -427,14 +560,16 @@ export default function CVCWords({ onComplete, onBack }) {
             type="button"
             role="tab"
             aria-selected={activeType === item.id}
-            className={activeType === item.id ? 'cvc-tab active' : 'cvc-tab'}
+            className={activeType === item.id ? 'cvc-tab active' : `cvc-tab${item.id !== 'learning' && !allVideosWatched ? ' locked' : ''}`}
             onClick={() => handleTypeChange(item.id)}
+            disabled={item.id !== 'learning' && !allVideosWatched}
           >
             {item.label}
           </button>
         ))}
       </div>
 
+      {activeType === 'learning' ? renderLearningMaterials() : null}
       {activeType === 'families' ? renderFamilies() : null}
       {activeType === 'selection' ? renderSelection() : null}
       {activeType === 'building' ? renderBuilding() : null}

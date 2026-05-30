@@ -150,7 +150,8 @@ public class ProgressService {
 		return switch (moduleName.toLowerCase()) {
 			case "vowels" -> 3;
 			case "consonants" -> 6;
-			case "alphabet", "cvc" -> 0; // No videos required
+			case "alphabet" -> 0;
+			case "cvc" -> 1;
 			default -> 0;
 		};
 	}
