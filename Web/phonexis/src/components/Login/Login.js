@@ -48,7 +48,6 @@ export default function Login({ onNavigate, onSuccess }) {
                 user_metadata: data.user.user_metadata,
               }
         );
-        onNavigate('dashboard');
       }
     } catch (err) {
       setError(err.message || 'Login error');

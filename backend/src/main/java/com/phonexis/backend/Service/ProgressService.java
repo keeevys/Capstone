@@ -176,7 +176,9 @@ public class ProgressService {
 		Boolean easyModeCompleted,
 		Boolean mediumModeCompleted,
 		Boolean hardModeCompleted,
-		Integer completionPercentage
+		Integer completionPercentage,
+		java.time.LocalDateTime createdAt,
+		java.time.LocalDateTime updatedAt
 	) {
 		public ProgressDTO(Progress progress) {
 			this(
@@ -189,7 +191,9 @@ public class ProgressService {
 				progress.getEasyModeCompleted(),
 				progress.getMediumModeCompleted(),
 				progress.getHardModeCompleted(),
-				progress.getCompletionPercentage()
+				progress.getCompletionPercentage(),
+				progress.getCreatedAt(),
+				progress.getUpdatedAt()
 			);
 		}
 	}

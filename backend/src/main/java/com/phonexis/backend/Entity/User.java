@@ -42,6 +42,12 @@ public class User {
 	@Column(nullable = false, length = 20)
 	private Role role = Role.STUDENT;
 
+	@Column(length = 50)
+	private String classroom;
+
+	@Column(name = "class_code", unique = true, length = 20)
+	private String classCode;
+
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private LocalDateTime createdAt;
 
@@ -110,6 +116,22 @@ public class User {
 
 	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
+	}
+
+	public String getClassroom() {
+		return classroom;
+	}
+
+	public void setClassroom(String classroom) {
+		this.classroom = classroom;
+	}
+
+	public String getClassCode() {
+		return classCode;
+	}
+
+	public void setClassCode(String classCode) {
+		this.classCode = classCode;
 	}
 
 	@PrePersist

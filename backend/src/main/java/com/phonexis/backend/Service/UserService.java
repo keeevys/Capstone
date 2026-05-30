@@ -3,6 +3,7 @@ package com.phonexis.backend.Service;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,6 +18,9 @@ import com.phonexis.backend.Repository.UserRepository;
 @Service
 public class UserService {
 	private static final BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
+	private static final String CLASS_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+	private static final int CLASS_CODE_LENGTH = 6;
+	private static final Random RANDOM = new Random();
 
 	private final UserRepository userRepository;
 
@@ -101,6 +105,14 @@ public class UserService {
 			user.setRole(normalizeRole(request.role()));
 		}
 
+		if (request.classroom() != null) {
+			user.setClassroom(normalizeOptionalValue(request.classroom()));
+		}
+
+		if (request.classCode() != null) {
+			user.setClassCode(normalizeOptionalValue(request.classCode()));
+		}
+
 		if (request.password() != null && !request.password().isBlank()) {
 			if (request.password().length() < 8) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password must be at least 8 characters");
@@ -110,6 +122,47 @@ public class UserService {
 		}
 
 		return toUserProfile(userRepository.save(user));
+	}
+
+	@Transactional
+	public UserProfile generateClassCode(Long teacherId) {
+		User teacher = getUserEntity(teacherId);
+		if (teacher.getRole() != Role.TEACHER) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only teacher accounts can generate class codes");
+		}
+
+		String classCode = buildUniqueClassCode();
+		teacher.setClassCode(classCode);
+		teacher.setClassroom(classCode);
+		return toUserProfile(userRepository.save(teacher));
+	}
+
+	@Transactional
+	public UserProfile joinClass(Long studentId, String classCode) {
+		User student = getUserEntity(studentId);
+		if (student.getRole() != Role.STUDENT) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only student accounts can join a class");
+		}
+
+		String normalizedCode = normalizeOptionalValue(classCode);
+		if (normalizedCode == null || normalizedCode.isBlank()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Class code is required");
+		}
+
+		User teacher = userRepository.findByClassCodeIgnoreCase(normalizedCode)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Class code not found"));
+
+		if (teacher.getRole() != Role.TEACHER) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Class code belongs to a non-teacher account");
+		}
+
+		String teacherClassroom = normalizeOptionalValue(teacher.getClassroom());
+		if (teacherClassroom == null || teacherClassroom.isBlank()) {
+			teacherClassroom = normalizeOptionalValue(teacher.getClassCode());
+		}
+
+		student.setClassroom(teacherClassroom);
+		return toUserProfile(userRepository.save(student));
 	}
 
 	@Transactional
@@ -176,6 +229,31 @@ public class UserService {
 		return email == null ? "" : email.trim().toLowerCase();
 	}
 
+	private String normalizeOptionalValue(String value) {
+		if (value == null) {
+			return null;
+		}
+
+		String normalized = value.trim();
+		return normalized.isEmpty() ? null : normalized;
+	}
+
+	private String buildUniqueClassCode() {
+		for (int attempt = 0; attempt < 100; attempt++) {
+			StringBuilder builder = new StringBuilder(CLASS_CODE_LENGTH);
+			for (int index = 0; index < CLASS_CODE_LENGTH; index++) {
+				builder.append(CLASS_CODE_CHARS.charAt(RANDOM.nextInt(CLASS_CODE_CHARS.length())));
+			}
+
+			String candidate = builder.toString();
+			if (!userRepository.existsByClassCodeIgnoreCase(candidate)) {
+				return candidate;
+			}
+		}
+
+		throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to generate unique class code");
+	}
+
 	private Role normalizeRole(String role) {
 		if (role == null || role.trim().isEmpty()) {
 			return Role.STUDENT;
@@ -194,6 +272,8 @@ public class UserService {
 		userMetadata.put("lastName", user.getLastName());
 		userMetadata.put("role", user.getRole().name().toLowerCase());
 		userMetadata.put("email", user.getEmail());
+		userMetadata.put("classroom", user.getClassroom());
+		userMetadata.put("classCode", user.getClassCode());
 
 		return new UserProfile(
 			user.getUserId(),
@@ -201,6 +281,8 @@ public class UserService {
 			user.getFirstName(),
 			user.getLastName(),
 			user.getRole().name().toLowerCase(),
+			user.getClassroom(),
+			user.getClassCode(),
 			user.getCreatedAt(),
 			userMetadata
 		);
@@ -209,9 +291,9 @@ public class UserService {
 	public record CreateUserRequest(String firstName, String lastName, String email, String password, String role) {
 	}
 
-	public record UpdateUserRequest(String firstName, String lastName, String email, String password, String role) {
+	public record UpdateUserRequest(String firstName, String lastName, String email, String password, String role, String classroom, String classCode) {
 	}
 
-	public record UserProfile(Long id, String email, String firstName, String lastName, String role, java.time.LocalDateTime createdAt, Map<String, Object> user_metadata) {
+	public record UserProfile(Long id, String email, String firstName, String lastName, String role, String classroom, String classCode, java.time.LocalDateTime createdAt, Map<String, Object> user_metadata) {
 	}
 }
