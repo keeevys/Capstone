@@ -35,7 +35,7 @@ const moduleCards = [
   },
 ];
 
-export default function Dashboard({ onNavigate, onSelectModule, onLogout, user, overallProgress = 0, alphabetProgress = 0, vowelsProgress = 0, consonantsProgress = 0, cvcProgress = 0, vowelsUnlocked = false, consonantsUnlocked = false, cvcUnlocked = false }) {
+export default function Dashboard({ onNavigate, onSelectModule, onLogout, onJoinClass, classroom = null, user, overallProgress = 0, alphabetProgress = 0, vowelsProgress = 0, consonantsProgress = 0, cvcProgress = 0, vowelsUnlocked = false, consonantsUnlocked = false, cvcUnlocked = false }) {
   const openGame = (moduleKey) => {
     if (moduleKey === 'vowels' && !vowelsUnlocked) {
       return;
@@ -60,6 +60,8 @@ export default function Dashboard({ onNavigate, onSelectModule, onLogout, user, 
     || user?.user_metadata?.name
     || emailName
     || 'Learner';
+  const isStudentUser = String(user?.role || user?.user_metadata?.role || '').toLowerCase() === 'student';
+  const hasClassroom = !!String(classroom || '').trim();
 
   return (
     <section className="dashboard-shell">
@@ -75,6 +77,21 @@ export default function Dashboard({ onNavigate, onSelectModule, onLogout, user, 
         </div>
 
         <div className="dashboard-topbar-actions">
+          {isStudentUser && (
+            <button type="button" className="dashboard-join-class" onClick={onJoinClass}>
+              {hasClassroom ? '🎒 JOIN ANOTHER CLASS' : '🎒 JOIN CLASS'}
+            </button>
+          )}
+          {user?.role === 'admin' && (
+            <button type="button" className="dashboard-admin" onClick={() => onNavigate('admin')}>
+              ⚙️ ADMIN
+            </button>
+          )}
+          {user?.role === 'teacher' && (
+            <button type="button" className="dashboard-teacher" onClick={() => onNavigate('teacher')}>
+              🧑‍🏫 TEACHER
+            </button>
+          )}
           <button type="button" className="dashboard-profile" onClick={() => onNavigate('profile')}>
             👤 PROFILE
           </button>

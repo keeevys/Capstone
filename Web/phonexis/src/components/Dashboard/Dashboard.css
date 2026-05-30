@@ -76,7 +76,8 @@
 }
 
 .dashboard-profile,
-.dashboard-logout {
+.dashboard-logout,
+.dashboard-join-class {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
@@ -110,10 +111,22 @@
   border-color: #FF6B6B;
 }
 
+.dashboard-join-class {
+  color: #2C9C5B;
+  border-color: #2C9C5B;
+}
+
 .dashboard-logout:hover {
   background: rgba(255, 107, 107, 0.1);
   border-color: #FF6B6B;
   box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+  transform: translateY(-3px);
+}
+
+.dashboard-join-class:hover {
+  background: rgba(44, 156, 91, 0.1);
+  border-color: #2C9C5B;
+  box-shadow: 0 8px 20px rgba(44, 156, 91, 0.25);
   transform: translateY(-3px);
 }
 

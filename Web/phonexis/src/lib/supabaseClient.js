@@ -131,3 +131,6 @@ export const updateBackendModuleVideos = (userId, moduleName, videoIds) => postT
   videoIds,
 });
 export const updateBackendModuleProgress = (userId, moduleName, payload) => putToBackend(`/api/progress/user/${userId}/module/${encodeURIComponent(moduleName)}`, payload);
+export const updateBackendUser = (userId, payload) => putToBackend(`/api/users/${userId}`, payload);
+export const generateBackendClassCode = (userId) => postToBackend(`/api/users/${userId}/generate-class-code`, {});
+export const joinBackendClass = (userId, classCode) => postToBackend(`/api/users/${userId}/join-class`, { classCode });

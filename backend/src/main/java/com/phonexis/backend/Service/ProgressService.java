@@ -50,6 +50,10 @@ public class ProgressService {
 
 		// Check if all required videos are watched for this module
 		int requiredVideos = getRequiredVideosCount(moduleName);
+		if (requiredVideos > 0) {
+			int watchedCount = Math.min(uniqueVideoIds.size(), requiredVideos);
+			progress.setCompletionPercentage(Math.round((watchedCount / (float) requiredVideos) * 100));
+		}
 		if (requiredVideos > 0 && uniqueVideoIds.size() >= requiredVideos) {
 			progress.setLessonUnlocked(true);
 			progress.setPretestUnlocked(true);
@@ -132,8 +136,17 @@ public class ProgressService {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
+		ensureDefaultProgressRows(user);
 		List<Progress> progressList = progressRepository.findByUser(user);
 		return progressList.stream().map(ProgressDTO::new).toList();
+	}
+
+	@Transactional
+	private void ensureDefaultProgressRows(User user) {
+		for (String moduleName : List.of("alphabet", "vowels", "consonants", "cvc")) {
+			progressRepository.findByUserAndModuleName(user, moduleName)
+				.orElseGet(() -> progressRepository.save(new Progress(user, moduleName)));
+		}
 	}
 
 	private Progress createDefaultProgress(User user, String moduleName) {
@@ -144,8 +157,10 @@ public class ProgressService {
 
 	private int getRequiredVideosCount(String moduleName) {
 		return switch (moduleName.toLowerCase()) {
-			case "vowels", "consonants" -> 3;
-			case "alphabet", "cvc" -> 0; // No videos required
+			case "vowels" -> 3;
+			case "consonants" -> 6;
+			case "alphabet" -> 0;
+			case "cvc" -> 1;
 			default -> 0;
 		};
 	}
@@ -161,7 +176,9 @@ public class ProgressService {
 		Boolean easyModeCompleted,
 		Boolean mediumModeCompleted,
 		Boolean hardModeCompleted,
-		Integer completionPercentage
+		Integer completionPercentage,
+		java.time.LocalDateTime createdAt,
+		java.time.LocalDateTime updatedAt
 	) {
 		public ProgressDTO(Progress progress) {
 			this(
@@ -174,7 +191,9 @@ public class ProgressService {
 				progress.getEasyModeCompleted(),
 				progress.getMediumModeCompleted(),
 				progress.getHardModeCompleted(),
-				progress.getCompletionPercentage()
+				progress.getCompletionPercentage(),
+				progress.getCreatedAt(),
+				progress.getUpdatedAt()
 			);
 		}
 	}

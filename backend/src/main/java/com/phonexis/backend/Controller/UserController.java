@@ -56,9 +56,21 @@ public class UserController {
 				request.lastName(),
 				request.email(),
 				request.password(),
-				request.role()
+				request.role(),
+				request.classroom(),
+				request.classCode()
 			))
 		));
+	}
+
+	@PostMapping("/{id}/generate-class-code")
+	public ResponseEntity<UserResponse> generateClassCode(@PathVariable Long id) {
+		return ResponseEntity.ok(new UserResponse(userService.generateClassCode(id)));
+	}
+
+	@PostMapping("/{id}/join-class")
+	public ResponseEntity<UserResponse> joinClass(@PathVariable Long id, @RequestBody JoinClassRequest request) {
+		return ResponseEntity.ok(new UserResponse(userService.joinClass(id, request.classCode())));
 	}
 
 	@DeleteMapping("/{id}")
@@ -70,7 +82,10 @@ public class UserController {
 	public record CreateUserRequest(String firstName, String lastName, String email, String password, String role) {
 	}
 
-	public record UpdateUserRequest(String firstName, String lastName, String email, String password, String role) {
+	public record UpdateUserRequest(String firstName, String lastName, String email, String password, String role, String classroom, String classCode) {
+	}
+
+	public record JoinClassRequest(String classCode) {
 	}
 
 	public record UserResponse(UserService.UserProfile user) {

@@ -11,10 +11,13 @@ import AlphabetRecognition from './components/Modules/AlphabetRecognition';
 import CVCWords from './components/Modules/CVCWords';
 import Vowels from './components/Modules/Vowels';
 import Consonants from './components/Modules/Consonants';
+import Admin from './components/Admin/Admin';
+import Teacher from './components/Teacher/Teacher';
 import {
   supabase,
   fetchBackendUsers,
   fetchBackendProgress,
+  joinBackendClass,
   updateBackendModuleProgress,
   updateBackendModuleVideos,
 } from './lib/supabaseClient';
@@ -33,6 +36,8 @@ function App() {
   const [consonantsCompleted, setConsonantsCompleted] = useState(false);
   const [cvcCompleted, setCvcCompleted] = useState(false);
   const [vowelsWatchedVideos, setVowelsWatchedVideos] = useState([]);
+  const [consonantsWatchedVideos, setConsonantsWatchedVideos] = useState([]);
+  const [cvcWatchedVideos, setCvcWatchedVideos] = useState([]);
   const [isProgressHydrated, setIsProgressHydrated] = useState(false);
   const [backendUserId, setBackendUserId] = useState(null);
 
@@ -58,6 +63,64 @@ function App() {
         email: user.email || user.user_metadata?.email,
       },
     };
+  }, []);
+
+  const applyBackendRole = useCallback(async (profile) => {
+    if (!profile) {
+      return null;
+    }
+
+    const email = String(profile.email || profile.user_metadata?.email || '').trim().toLowerCase();
+    if (!email) {
+      return profile;
+    }
+
+    try {
+      const backendUsers = await fetchBackendUsers();
+      if (backendUsers.error || !Array.isArray(backendUsers.data)) {
+        return profile;
+      }
+
+      const backendUser = backendUsers.data.find((entry) => String(entry?.email || '').trim().toLowerCase() === email);
+      if (!backendUser?.role) {
+        return profile;
+      }
+
+      const nextRole = String(backendUser.role).toLowerCase();
+
+      return {
+        ...profile,
+        id: backendUser.id ?? profile.id,
+        firstname: backendUser.firstName || backendUser.firstname || profile.firstname,
+        lastname: backendUser.lastName || backendUser.lastname || profile.lastname,
+        role: nextRole,
+        classroom: backendUser.classroom || backendUser.user_metadata?.classroom || profile.classroom || null,
+        classCode: backendUser.classCode || backendUser.user_metadata?.classCode || profile.classCode || null,
+        user_metadata: {
+          ...(profile.user_metadata || {}),
+          role: nextRole,
+          classCode: backendUser.classCode || backendUser.user_metadata?.classCode || profile.user_metadata?.classCode || null,
+          classroom: backendUser.classroom || backendUser.user_metadata?.classroom || profile.user_metadata?.classroom || null,
+          firstName: backendUser.firstName || backendUser.firstname || profile.firstname,
+          lastName: backendUser.lastName || backendUser.lastname || profile.lastname,
+        },
+      };
+    } catch (error) {
+      return profile;
+    }
+  }, []);
+
+  const getLandingViewByRole = useCallback((userProfile) => {
+    const normalizedRole = String(userProfile?.role || userProfile?.user_metadata?.role || '').toLowerCase();
+    if (normalizedRole === 'admin') {
+      return 'admin';
+    }
+
+    if (normalizedRole === 'teacher') {
+      return 'teacher';
+    }
+
+    return 'dashboard';
   }, []);
 
   useEffect(() => {
@@ -101,9 +164,15 @@ function App() {
         return;
       }
 
-      setCurrentUser(mapAuthUserToProfile(sessionUser));
+      const mappedUser = mapAuthUserToProfile(sessionUser);
+      const roleAwareUser = await applyBackendRole(mappedUser);
+      if (cancelled) {
+        return;
+      }
+
+      setCurrentUser(roleAwareUser);
       setIsAuthenticated(true);
-      setActiveView((currentView) => (currentView === 'login' ? 'dashboard' : currentView));
+      setActiveView((currentView) => (currentView === 'login' ? getLandingViewByRole(roleAwareUser) : currentView));
     };
 
     void restoreSession();
@@ -118,16 +187,26 @@ function App() {
         return;
       }
 
-      setCurrentUser(mapAuthUserToProfile(session.user));
-      setIsAuthenticated(true);
-      setActiveView((currentView) => (currentView === 'login' ? 'dashboard' : currentView));
+      const syncProfile = async () => {
+        const mappedUser = mapAuthUserToProfile(session.user);
+        const roleAwareUser = await applyBackendRole(mappedUser);
+        if (cancelled) {
+          return;
+        }
+
+        setCurrentUser(roleAwareUser);
+        setIsAuthenticated(true);
+        setActiveView((currentView) => (currentView === 'login' ? getLandingViewByRole(roleAwareUser) : currentView));
+      };
+
+      void syncProfile();
     });
 
     return () => {
       cancelled = true;
       subscription?.unsubscribe();
     };
-  }, [mapAuthUserToProfile]);
+  }, [mapAuthUserToProfile, applyBackendRole, getLandingViewByRole]);
 
   // Build a stable storage key for the logged-in user
   const getProgressKey = (user) => {
@@ -165,6 +244,8 @@ function App() {
     setConsonantsCompleted(!!snapshot.consonantsCompleted);
     setCvcCompleted(!!snapshot.cvcCompleted);
     setVowelsWatchedVideos(parseVideoIds(snapshot.vowelsWatchedVideos));
+    setConsonantsWatchedVideos(parseVideoIds(snapshot.consonantsWatchedVideos));
+    setCvcWatchedVideos(parseVideoIds(snapshot.cvcWatchedVideos));
   }, [parseVideoIds]);
 
   const mapBackendProgressToSnapshot = useCallback((progressList = []) => {
@@ -189,6 +270,8 @@ function App() {
       consonantsCompleted: !!(consonantsProgress?.pretestCompleted || consonantsProgress?.completionPercentage >= 100),
       cvcCompleted: !!(cvcProgress?.pretestCompleted || cvcProgress?.completionPercentage >= 100),
       vowelsWatchedVideos: parseVideoIds(vowelsProgress?.videosWatched),
+      consonantsWatchedVideos: parseVideoIds(consonantsProgress?.videosWatched),
+      cvcWatchedVideos: parseVideoIds(cvcProgress?.videosWatched),
     };
   }, [parseVideoIds]);
 
@@ -199,6 +282,8 @@ function App() {
     setConsonantsCompleted(false);
     setCvcCompleted(false);
     setVowelsWatchedVideos([]);
+    setConsonantsWatchedVideos([]);
+    setCvcWatchedVideos([]);
     setBackendUserId(null);
     setIsProgressHydrated(false);
   }, []);
@@ -229,6 +314,19 @@ function App() {
     const matchedUser = backendUsers.data.find((entry) => String(entry?.email || '').trim().toLowerCase() === email);
     return matchedUser?.id ?? null;
   }, []);
+
+  const refreshCurrentUserFromBackend = useCallback(async () => {
+    setCurrentUser((current) => current);
+    if (!currentUser) {
+      return null;
+    }
+
+    const refreshed = await applyBackendRole(currentUser);
+    if (refreshed) {
+      setCurrentUser(refreshed);
+    }
+    return refreshed;
+  }, [currentUser, applyBackendRole]);
 
   // Load progress for the current user when they log in
   useEffect(() => {
@@ -292,6 +390,8 @@ function App() {
         consonantsCompleted,
         cvcCompleted,
         vowelsWatchedVideos,
+        consonantsWatchedVideos,
+        cvcWatchedVideos,
       });
       if (key) {
         localStorage.setItem(key, payload);
@@ -300,34 +400,34 @@ function App() {
       // ignore storage errors
     }
 
-    const effectiveBackendUserId = backendUserId || currentUser?.id;
-
-    if (!effectiveBackendUserId) {
+    if (!backendUserId) {
       return;
     }
 
     const syncBackendProgress = async () => {
       await Promise.all([
-        updateBackendModuleProgress(effectiveBackendUserId, 'alphabet', {
+        updateBackendModuleProgress(backendUserId, 'alphabet', {
           easyModeCompleted: completedPretests.includes('easy'),
           mediumModeCompleted: completedPretests.includes('medium'),
           hardModeCompleted: completedPretests.includes('hard'),
         }),
-        updateBackendModuleVideos(effectiveBackendUserId, 'vowels', vowelsWatchedVideos),
-        updateBackendModuleProgress(effectiveBackendUserId, 'vowels', {
+        updateBackendModuleVideos(backendUserId, 'vowels', vowelsWatchedVideos),
+        updateBackendModuleVideos(backendUserId, 'consonants', consonantsWatchedVideos),
+        updateBackendModuleVideos(backendUserId, 'cvc', cvcWatchedVideos),
+        updateBackendModuleProgress(backendUserId, 'vowels', {
           pretestCompleted: vowelsCompleted,
         }),
-        updateBackendModuleProgress(effectiveBackendUserId, 'consonants', {
+        updateBackendModuleProgress(backendUserId, 'consonants', {
           pretestCompleted: consonantsCompleted,
         }),
-        updateBackendModuleProgress(effectiveBackendUserId, 'cvc', {
+        updateBackendModuleProgress(backendUserId, 'cvc', {
           pretestCompleted: cvcCompleted,
         }),
       ]);
     };
 
     void syncBackendProgress();
-  }, [currentUser, backendUserId, isProgressHydrated, completedPretests, completedAlphabetModes, vowelsCompleted, consonantsCompleted, cvcCompleted, vowelsWatchedVideos]);
+  }, [currentUser, backendUserId, isProgressHydrated, completedPretests, completedAlphabetModes, vowelsCompleted, consonantsCompleted, cvcCompleted, vowelsWatchedVideos, consonantsWatchedVideos, cvcWatchedVideos]);
 
   // Background music effect
   useEffect(() => {
@@ -371,8 +471,8 @@ function App() {
   // Module progress is driven by the user's completed steps.
   const alphabetProgress = Math.round((completedAlphabetModes.length / 3) * 100);
   const vowelsProgress = vowelsCompleted ? 100 : Math.round((vowelsWatchedVideos.length / 3) * 100);
-  const consonantsProgress = consonantsCompleted ? 100 : 0;
-  const cvcProgress = cvcCompleted ? 100 : 0;
+  const consonantsProgress = consonantsCompleted ? 100 : Math.round((consonantsWatchedVideos.length / 6) * 100);
+  const cvcProgress = cvcCompleted || cvcWatchedVideos.length > 0 ? 100 : 0;
   const overallProgress = Math.round((alphabetProgress + vowelsProgress + consonantsProgress + cvcProgress) / 4);
   const vowelsUnlocked = alphabetProgress >= 100;
   const consonantsUnlocked = vowelsProgress >= 100;
@@ -430,11 +530,14 @@ function App() {
   };
 
   const handleAuthSuccess = (userProfile) => {
+    const mappedProfile = userProfile ? mapAuthUserToProfile(userProfile) : null;
+
     if (userProfile) {
-      setCurrentUser(mapAuthUserToProfile(userProfile));
+      setCurrentUser(mappedProfile);
     }
 
     setIsAuthenticated(true);
+    setActiveView(getLandingViewByRole(mappedProfile));
   };
 
   const handleLogout = async () => {
@@ -447,6 +550,30 @@ function App() {
     setIsAuthenticated(false);
     setCurrentUser(null);
     setActiveView('login');
+  };
+
+  const handleJoinClass = async () => {
+    const classCodeInput = window.prompt('Enter class code from your teacher:');
+    const classCode = String(classCodeInput || '').trim();
+    if (!classCode) {
+      return;
+    }
+
+    const userId = backendUserId || await resolveBackendUserId(currentUser);
+    if (!userId) {
+      window.alert('Unable to locate your account in backend. Please log out and log in again.');
+      return;
+    }
+
+    const result = await joinBackendClass(userId, classCode);
+    if (result.error) {
+      window.alert(result.error.message || 'Failed to join class');
+      return;
+    }
+
+    setBackendUserId(userId);
+    await refreshCurrentUserFromBackend();
+    window.alert('You joined the class successfully.');
   };
 
   const renderView = () => {
@@ -470,6 +597,31 @@ function App() {
         default:
           return <Login onNavigate={setActiveView} onSuccess={handleAuthSuccess} />;
       }
+    }
+
+    const normalizedRole = String(currentUser?.role || currentUser?.user_metadata?.role || '').toLowerCase();
+    const isAdminUser = normalizedRole === 'admin';
+    const isTeacherUser = normalizedRole === 'teacher';
+
+    if (isAdminUser) {
+      return (
+        <Admin
+          onNavigate={setActiveView}
+          onLogout={handleLogout}
+        />
+      );
+    }
+
+    if (isTeacherUser) {
+      return (
+        <Teacher
+          onNavigate={setActiveView}
+          onLogout={handleLogout}
+          user={currentUser}
+          backendUserId={backendUserId}
+          onProfileRefresh={refreshCurrentUserFromBackend}
+        />
+      );
     }
 
     switch (activeView) {
@@ -498,6 +650,8 @@ function App() {
               consonantsUnlocked={consonantsUnlocked}
               cvcUnlocked={cvcUnlocked}
               onLogout={handleLogout}
+              onJoinClass={handleJoinClass}
+              classroom={currentUser?.classroom || currentUser?.user_metadata?.classroom || null}
             />
           );
         }
@@ -506,6 +660,8 @@ function App() {
           <CVCWords
             onComplete={handleCvcComplete}
             onBack={() => setActiveView('dashboard')}
+            initialVideosWatched={cvcWatchedVideos}
+            onVideosWatchedChange={setCvcWatchedVideos}
           />
         );
       case 'vowels':
@@ -524,6 +680,8 @@ function App() {
               consonantsUnlocked={consonantsUnlocked}
               cvcUnlocked={cvcUnlocked}
               onLogout={handleLogout}
+              onJoinClass={handleJoinClass}
+              classroom={currentUser?.classroom || currentUser?.user_metadata?.classroom || null}
             />
           );
         }
@@ -552,6 +710,8 @@ function App() {
               consonantsUnlocked={consonantsUnlocked}
               cvcUnlocked={cvcUnlocked}
               onLogout={handleLogout}
+              onJoinClass={handleJoinClass}
+              classroom={currentUser?.classroom || currentUser?.user_metadata?.classroom || null}
             />
           );
         }
@@ -560,6 +720,9 @@ function App() {
           <Consonants
             onComplete={handleConsonantsComplete}
             onBack={() => setActiveView('dashboard')}
+            initialVideosWatched={consonantsWatchedVideos}
+            onVideosWatchedChange={setConsonantsWatchedVideos}
+            isCompleted={consonantsCompleted}
           />
         );
       case 'modules':
@@ -602,6 +765,25 @@ function App() {
             onLogout={handleLogout}
           />
         );
+      case 'admin':
+        return (
+          <Admin
+            onNavigate={setActiveView}
+            onLogout={handleLogout}
+            onJoinClass={handleJoinClass}
+            classroom={currentUser?.classroom || currentUser?.user_metadata?.classroom || null}
+          />
+        );
+      case 'teacher':
+        return (
+          <Teacher
+            onNavigate={setActiveView}
+            onLogout={handleLogout}
+            user={currentUser}
+            backendUserId={backendUserId}
+            onProfileRefresh={refreshCurrentUserFromBackend}
+          />
+        );
       case 'dashboard':
       default:
         return (
@@ -618,6 +800,8 @@ function App() {
             consonantsUnlocked={consonantsUnlocked}
             cvcUnlocked={cvcUnlocked}
             onLogout={handleLogout}
+            onJoinClass={handleJoinClass}
+            classroom={currentUser?.classroom || currentUser?.user_metadata?.classroom || null}
           />
         );
     }
