@@ -136,8 +136,17 @@ public class ProgressService {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
+		ensureDefaultProgressRows(user);
 		List<Progress> progressList = progressRepository.findByUser(user);
 		return progressList.stream().map(ProgressDTO::new).toList();
+	}
+
+	@Transactional
+	private void ensureDefaultProgressRows(User user) {
+		for (String moduleName : List.of("alphabet", "vowels", "consonants", "cvc")) {
+			progressRepository.findByUserAndModuleName(user, moduleName)
+				.orElseGet(() -> progressRepository.save(new Progress(user, moduleName)));
+		}
 	}
 
 	private Progress createDefaultProgress(User user, String moduleName) {

@@ -310,29 +310,27 @@ function App() {
       // ignore storage errors
     }
 
-    const effectiveBackendUserId = backendUserId || currentUser?.id;
-
-    if (!effectiveBackendUserId) {
+    if (!backendUserId) {
       return;
     }
 
     const syncBackendProgress = async () => {
       await Promise.all([
-        updateBackendModuleProgress(effectiveBackendUserId, 'alphabet', {
+        updateBackendModuleProgress(backendUserId, 'alphabet', {
           easyModeCompleted: completedPretests.includes('easy'),
           mediumModeCompleted: completedPretests.includes('medium'),
           hardModeCompleted: completedPretests.includes('hard'),
         }),
-        updateBackendModuleVideos(effectiveBackendUserId, 'vowels', vowelsWatchedVideos),
-        updateBackendModuleVideos(effectiveBackendUserId, 'consonants', consonantsWatchedVideos),
-        updateBackendModuleVideos(effectiveBackendUserId, 'cvc', cvcWatchedVideos),
-        updateBackendModuleProgress(effectiveBackendUserId, 'vowels', {
+        updateBackendModuleVideos(backendUserId, 'vowels', vowelsWatchedVideos),
+        updateBackendModuleVideos(backendUserId, 'consonants', consonantsWatchedVideos),
+        updateBackendModuleVideos(backendUserId, 'cvc', cvcWatchedVideos),
+        updateBackendModuleProgress(backendUserId, 'vowels', {
           pretestCompleted: vowelsCompleted,
         }),
-        updateBackendModuleProgress(effectiveBackendUserId, 'consonants', {
+        updateBackendModuleProgress(backendUserId, 'consonants', {
           pretestCompleted: consonantsCompleted,
         }),
-        updateBackendModuleProgress(effectiveBackendUserId, 'cvc', {
+        updateBackendModuleProgress(backendUserId, 'cvc', {
           pretestCompleted: cvcCompleted,
         }),
       ]);
