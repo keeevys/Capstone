@@ -33,6 +33,7 @@ function App() {
   const [consonantsCompleted, setConsonantsCompleted] = useState(false);
   const [cvcCompleted, setCvcCompleted] = useState(false);
   const [vowelsWatchedVideos, setVowelsWatchedVideos] = useState([]);
+  const [consonantsWatchedVideos, setConsonantsWatchedVideos] = useState([]);
   const [isProgressHydrated, setIsProgressHydrated] = useState(false);
   const [backendUserId, setBackendUserId] = useState(null);
 
@@ -165,6 +166,7 @@ function App() {
     setConsonantsCompleted(!!snapshot.consonantsCompleted);
     setCvcCompleted(!!snapshot.cvcCompleted);
     setVowelsWatchedVideos(parseVideoIds(snapshot.vowelsWatchedVideos));
+    setConsonantsWatchedVideos(parseVideoIds(snapshot.consonantsWatchedVideos));
   }, [parseVideoIds]);
 
   const mapBackendProgressToSnapshot = useCallback((progressList = []) => {
@@ -189,6 +191,7 @@ function App() {
       consonantsCompleted: !!(consonantsProgress?.pretestCompleted || consonantsProgress?.completionPercentage >= 100),
       cvcCompleted: !!(cvcProgress?.pretestCompleted || cvcProgress?.completionPercentage >= 100),
       vowelsWatchedVideos: parseVideoIds(vowelsProgress?.videosWatched),
+      consonantsWatchedVideos: parseVideoIds(consonantsProgress?.videosWatched),
     };
   }, [parseVideoIds]);
 
@@ -199,6 +202,7 @@ function App() {
     setConsonantsCompleted(false);
     setCvcCompleted(false);
     setVowelsWatchedVideos([]);
+    setConsonantsWatchedVideos([]);
     setBackendUserId(null);
     setIsProgressHydrated(false);
   }, []);
@@ -292,6 +296,7 @@ function App() {
         consonantsCompleted,
         cvcCompleted,
         vowelsWatchedVideos,
+        consonantsWatchedVideos,
       });
       if (key) {
         localStorage.setItem(key, payload);
@@ -314,6 +319,7 @@ function App() {
           hardModeCompleted: completedPretests.includes('hard'),
         }),
         updateBackendModuleVideos(effectiveBackendUserId, 'vowels', vowelsWatchedVideos),
+        updateBackendModuleVideos(effectiveBackendUserId, 'consonants', consonantsWatchedVideos),
         updateBackendModuleProgress(effectiveBackendUserId, 'vowels', {
           pretestCompleted: vowelsCompleted,
         }),
@@ -327,7 +333,7 @@ function App() {
     };
 
     void syncBackendProgress();
-  }, [currentUser, backendUserId, isProgressHydrated, completedPretests, completedAlphabetModes, vowelsCompleted, consonantsCompleted, cvcCompleted, vowelsWatchedVideos]);
+  }, [currentUser, backendUserId, isProgressHydrated, completedPretests, completedAlphabetModes, vowelsCompleted, consonantsCompleted, cvcCompleted, vowelsWatchedVideos, consonantsWatchedVideos]);
 
   // Background music effect
   useEffect(() => {
@@ -371,7 +377,7 @@ function App() {
   // Module progress is driven by the user's completed steps.
   const alphabetProgress = Math.round((completedAlphabetModes.length / 3) * 100);
   const vowelsProgress = vowelsCompleted ? 100 : Math.round((vowelsWatchedVideos.length / 3) * 100);
-  const consonantsProgress = consonantsCompleted ? 100 : 0;
+  const consonantsProgress = consonantsCompleted ? 100 : Math.round((consonantsWatchedVideos.length / 6) * 100);
   const cvcProgress = cvcCompleted ? 100 : 0;
   const overallProgress = Math.round((alphabetProgress + vowelsProgress + consonantsProgress + cvcProgress) / 4);
   const vowelsUnlocked = alphabetProgress >= 100;
@@ -560,6 +566,9 @@ function App() {
           <Consonants
             onComplete={handleConsonantsComplete}
             onBack={() => setActiveView('dashboard')}
+            initialVideosWatched={consonantsWatchedVideos}
+            onVideosWatchedChange={setConsonantsWatchedVideos}
+            isCompleted={consonantsCompleted}
           />
         );
       case 'modules':

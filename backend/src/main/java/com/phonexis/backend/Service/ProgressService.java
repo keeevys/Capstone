@@ -50,6 +50,10 @@ public class ProgressService {
 
 		// Check if all required videos are watched for this module
 		int requiredVideos = getRequiredVideosCount(moduleName);
+		if (requiredVideos > 0) {
+			int watchedCount = Math.min(uniqueVideoIds.size(), requiredVideos);
+			progress.setCompletionPercentage(Math.round((watchedCount / (float) requiredVideos) * 100));
+		}
 		if (requiredVideos > 0 && uniqueVideoIds.size() >= requiredVideos) {
 			progress.setLessonUnlocked(true);
 			progress.setPretestUnlocked(true);
@@ -144,7 +148,8 @@ public class ProgressService {
 
 	private int getRequiredVideosCount(String moduleName) {
 		return switch (moduleName.toLowerCase()) {
-			case "vowels", "consonants" -> 3;
+			case "vowels" -> 3;
+			case "consonants" -> 6;
 			case "alphabet", "cvc" -> 0; // No videos required
 			default -> 0;
 		};
