@@ -13,6 +13,7 @@ import Vowels from './components/Modules/Vowels';
 import Consonants from './components/Modules/Consonants';
 import Admin from './components/Admin/Admin';
 import Teacher from './components/Teacher/Teacher';
+import Routing from './router/Routing';
 import {
   supabase,
   fetchBackendUsers,
@@ -485,6 +486,15 @@ function App() {
 
   // Background music effect
   useEffect(() => {
+    const isNotImplementedMediaError = (error) => {
+      if (!error) {
+        return false;
+      }
+
+      const message = error.message || String(error);
+      return error.name === 'NotImplementedError' || /Not implemented/i.test(message);
+    };
+
     const pauseAudioSafely = () => {
       if (!audioRef.current) {
         return;
@@ -493,7 +503,7 @@ function App() {
       try {
         audioRef.current.pause();
       } catch (error) {
-        if (error?.name !== 'NotImplementedError') {
+        if (!isNotImplementedMediaError(error)) {
           throw error;
         }
       }
@@ -867,16 +877,32 @@ function App() {
 
   if (!isAuthenticated) {
     return (
-      <div className="app-shell">
-        <div className="app-orb app-orb-left" aria-hidden="true" />
-        <div className="app-orb app-orb-right" aria-hidden="true" />
+      <Routing
+        activeView={activeView}
+        isAuthenticated={isAuthenticated}
+        currentUser={currentUser}
+        onNavigate={navigateTo}
+      >
+        <div className="app-shell">
+          <div className="app-orb app-orb-left" aria-hidden="true" />
+          <div className="app-orb app-orb-right" aria-hidden="true" />
 
-        <main className="app-main app-auth-main app-login-main">{renderView()}</main>
-      </div>
+          <main className="app-main app-auth-main app-login-main">{renderView()}</main>
+        </div>
+      </Routing>
     );
   }
 
-  return <div className="app-shell app-shell-authenticated">{renderView()}</div>;
+  return (
+    <Routing
+      activeView={activeView}
+      isAuthenticated={isAuthenticated}
+      currentUser={currentUser}
+      onNavigate={navigateTo}
+    >
+      <div className="app-shell app-shell-authenticated">{renderView()}</div>
+    </Routing>
+  );
 }
 
 export default App;
