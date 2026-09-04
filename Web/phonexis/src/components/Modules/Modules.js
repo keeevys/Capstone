@@ -1,6 +1,7 @@
 import './Modules.css';
 import AlphabetRecognition from './AlphabetRecognition';
 import CVCWords from './CVCWords';
+import Phonzy from './CVCWords/Phonzy';
 import Vowels from './Vowels';
 import Consonants from './Consonants';
 
@@ -25,9 +26,14 @@ const moduleCards = {
     description: 'Three-letter blend practice for simple decoding.',
     component: CVCWords,
   },
+  phonzy: {
+    title: 'Phonzy',
+    description: 'Say it out loud! A pronunciation game with mic scoring.',
+    component: Phonzy,
+  },
 };
 
-export default function Modules({ activeModule, onNavigate, onSelectModule, onLogout, onComplete, vowelsUnlocked = false, consonantsUnlocked = false, cvcUnlocked = false }) {
+export default function Modules({ activeModule, onNavigate, onSelectModule, onLogout, onComplete, vowelsUnlocked = false, consonantsUnlocked = false, cvcUnlocked = false, backendUserId = null }) {
   const currentModule = moduleCards[activeModule] ?? moduleCards.alphabet;
   const CurrentGame = currentModule.component;
 
@@ -35,6 +41,7 @@ export default function Modules({ activeModule, onNavigate, onSelectModule, onLo
     if (key === 'vowels' && !vowelsUnlocked) return true;
     if (key === 'consonants' && !consonantsUnlocked) return true;
     if (key === 'cvc' && !cvcUnlocked) return true;
+    if (key === 'phonzy' && !cvcUnlocked) return true;
     return false;
   };
 
@@ -84,7 +91,7 @@ export default function Modules({ activeModule, onNavigate, onSelectModule, onLo
 
       <div className="module-content">
         <div className="module-stage">
-          <CurrentGame onComplete={onComplete} onBack={() => onNavigate('dashboard')} />
+          <CurrentGame onComplete={onComplete} onBack={() => onNavigate('dashboard')} backendUserId={backendUserId} />
         </div>
       </div>
     </section>
