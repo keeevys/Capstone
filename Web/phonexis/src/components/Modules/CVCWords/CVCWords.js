@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import './CVCWords.css';
 import VoicePractice from '../../VoicePractice/VoicePractice';
+import Phonzy from './Phonzy';
 
 const videos = [
   {
@@ -220,7 +221,7 @@ const wordBuildingDeck = [
 
 const getRandomBuildingWord = () => wordBuildingDeck[Math.floor(Math.random() * wordBuildingDeck.length)];
 
-export default function CVCWords({ onComplete, initialVideosWatched = [], onVideosWatchedChange, initialType = 'learning' }) {
+export default function CVCWords({ onComplete, initialVideosWatched = [], onVideosWatchedChange, initialType = 'learning', backendUserId = null }) {
   const [activeType, setActiveType] = useState(initialType);
   const [selectedFamily, setSelectedFamily] = useState(wordFamilies[0].family);
   const [selectedWord, setSelectedWord] = useState(wordSelection[0]);
@@ -240,8 +241,6 @@ export default function CVCWords({ onComplete, initialVideosWatched = [], onVide
   useEffect(() => {
     setVideosWatched(Array.isArray(initialVideosWatched) ? initialVideosWatched : []);
   }, [initialVideosWatched]);
-
-  const allVideosWatched = videosWatched.length === videos.length;
 
   useEffect(() => {
     setActiveType(initialType);
@@ -628,6 +627,10 @@ export default function CVCWords({ onComplete, initialVideosWatched = [], onVide
       </div>
     </div>
   );
+
+  if (activeType === 'phonzy') {
+    return <Phonzy onBack={() => setActiveType('learning')} backLabel="← Back to CVC Words" backendUserId={backendUserId} />;
+  }
 
   return (
     <div className="module-detail cvc-detail">
