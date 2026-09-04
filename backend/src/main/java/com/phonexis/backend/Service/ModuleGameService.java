@@ -46,6 +46,7 @@ public class ModuleGameService {
 		seedGame("cvc", "cvc-word-families", "Word Families", "Match CVC families and practice sound patterns.", 2);
 		seedGame("cvc", "cvc-word-selection", "Word Selection", "Choose the correct CVC word.", 3);
 		seedGame("cvc", "cvc-word-building", "Word Building", "Build the correct CVC word letter by letter.", 4);
+		seedGame("cvc", "cvc-phonzy", "Phonzy", "Say it out loud! A pronunciation game with mic scoring.", 5);
 	}
 
 	@Transactional(readOnly = true)
