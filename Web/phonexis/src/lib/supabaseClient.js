@@ -141,3 +141,7 @@ export const updateBackendUser = (userId, payload) => putToBackend(`/api/users/$
 export const deleteBackendUser = (userId) => requestToBackend(`/api/users/${userId}`, { method: 'DELETE' });
 export const generateBackendClassCode = (userId) => postToBackend(`/api/users/${userId}/generate-class-code`, {});
 export const joinBackendClass = (userId, classCode) => postToBackend(`/api/users/${userId}/join-class`, { classCode });
+export const checkBackendPronunciation = (payload) => postToBackend('/api/pronunciation/check', payload);
+export const fetchBackendPronunciationHistory = (userId, levelId) => getFromBackend(
+  `/api/pronunciation/history/user/${userId}${levelId ? `?levelId=${encodeURIComponent(levelId)}` : ''}`,
+);
