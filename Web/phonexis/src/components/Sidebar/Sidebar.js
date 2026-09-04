@@ -30,6 +30,7 @@ const moduleSections = {
     { key: 'families', label: 'Simpler CVC Words' },
     { key: 'selection', label: 'Word Selection' },
     { key: 'building', label: 'Word Building' },
+    { key: 'phonzy', label: 'Phonzy' },
   ],
 };
 
