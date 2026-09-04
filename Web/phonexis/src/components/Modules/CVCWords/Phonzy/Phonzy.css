@@ -1,0 +1,760 @@
+.phonzy-detail {
+  display: grid;
+  gap: 1rem;
+  min-height: 40rem;
+  padding: 2rem;
+  border-radius: 2rem;
+  background: var(--app-background, #ffffff);
+  border: 3px solid #FFD700;
+  box-shadow: 0 12px 40px rgba(77, 150, 255, 0.15), 0 20px 60px rgba(0, 0, 0, 0.1);
+  color: var(--app-text, #2C3E50);
+  font-family: inherit;
+}
+
+.phonzy-exit-bar {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.phonzy-screen {
+  display: grid;
+  gap: 1.1rem;
+  animation: phonzyFadeIn 0.4s ease-out;
+  justify-items: center;
+  text-align: center;
+}
+
+@keyframes phonzyFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes phonzyPop {
+  0% { transform: scale(0.85); opacity: 0; }
+  60% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes phonzyPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.55); }
+  50% { box-shadow: 0 0 0 14px rgba(255, 107, 107, 0); }
+}
+
+@keyframes phonzyBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes phonzySpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- Buttons (shared) ---------- */
+
+.phonzy-btn {
+  appearance: none;
+  border-radius: 1rem;
+  padding: 0.85rem 1.6rem;
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.phonzy-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.phonzy-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.phonzy-btn-primary {
+  background: linear-gradient(135deg, #4D96FF, #6C5CE7);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(77, 150, 255, 0.35);
+}
+
+.phonzy-btn-secondary {
+  background: rgba(77, 150, 255, 0.1);
+  color: #4D96FF;
+  border-color: #4D96FF;
+}
+
+.phonzy-btn-ghost {
+  background: transparent;
+  color: #FF6B6B;
+  border-color: rgba(255, 107, 107, 0.4);
+}
+
+.phonzy-btn-large {
+  padding: 1.1rem 2.4rem;
+  font-size: 1.15rem;
+  border-radius: 1.25rem;
+}
+
+/* ---------- Home ---------- */
+
+.phonzy-mascot {
+  font-size: 4rem;
+  animation: phonzyBounce 2.4s ease-in-out infinite;
+}
+
+.phonzy-title {
+  margin: 0;
+  font-size: 2.6rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #4D96FF, #9B59B6, #FF6B6B);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.phonzy-tagline {
+  margin: -0.6rem 0 0;
+  color: #6b7a8f;
+  font-weight: 600;
+}
+
+.phonzy-home-stats {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.phonzy-stat-pill {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  background: rgba(255, 215, 0, 0.15);
+  border: 2px solid #FFD700;
+  border-radius: 1rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #b8860b;
+}
+
+.phonzy-stat-pill strong {
+  font-size: 1.3rem;
+  color: #2C3E50;
+}
+
+.phonzy-card {
+  width: min(100%, 30rem);
+  background: rgba(77, 150, 255, 0.06);
+  border: 2px solid rgba(77, 150, 255, 0.25);
+  border-radius: 1.5rem;
+  padding: 1.4rem;
+  display: grid;
+  gap: 0.75rem;
+  justify-items: center;
+}
+
+.phonzy-card h2 {
+  margin: 0;
+}
+
+.phonzy-mic-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(120, 120, 120, 0.1);
+}
+
+.phonzy-mic-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #9aa5b1;
+}
+
+.phonzy-mic-status-good .phonzy-mic-dot {
+  background: #2ECC71;
+  animation: phonzyPulse 1.6s infinite;
+}
+
+.phonzy-mic-status-good { color: #1e8449; background: rgba(46, 204, 113, 0.12); }
+.phonzy-mic-status-bad { color: #c0392b; background: rgba(255, 107, 107, 0.12); }
+.phonzy-mic-status-bad .phonzy-mic-dot { background: #FF6B6B; }
+.phonzy-mic-status-neutral { color: #6b7a8f; }
+
+.phonzy-mic-error {
+  color: #c0392b;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.phonzy-mic-note {
+  font-size: 0.78rem;
+  color: #8a7300;
+  background: rgba(255, 215, 0, 0.12);
+  border-radius: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  margin: 0;
+}
+
+.phonzy-mic-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.phonzy-how-to {
+  width: min(100%, 30rem);
+  text-align: left;
+  background: rgba(255, 215, 0, 0.08);
+  border: 2px dashed #FFD700;
+  border-radius: 1.5rem;
+  padding: 1.2rem 1.4rem;
+}
+
+.phonzy-how-to h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.phonzy-how-to ol {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.4rem;
+  font-weight: 600;
+}
+
+.phonzy-home-actions {
+  display: grid;
+  gap: 0.6rem;
+  width: min(100%, 20rem);
+}
+
+/* ---------- Level meter ---------- */
+
+.phonzy-level-meter {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 32px;
+}
+
+.phonzy-level-bar {
+  width: 6px;
+  height: 20%;
+  border-radius: 4px;
+  background: #d7e3f4;
+  transition: height 0.08s ease, background 0.15s ease;
+}
+
+.phonzy-level-bar.active {
+  height: calc(35% + (var(--bar-index) * 4%));
+  background: linear-gradient(180deg, #2ECC71, #4D96FF);
+}
+
+/* ---------- Level select ---------- */
+
+.phonzy-screen-header {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phonzy-back-btn {
+  position: absolute;
+  left: 0;
+  padding: 0.5rem 1rem;
+}
+
+.phonzy-screen-header h1 {
+  margin: 0;
+}
+
+.phonzy-level-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.phonzy-level-card {
+  appearance: none;
+  cursor: pointer;
+  border-radius: 1.5rem;
+  border: 3px solid var(--level-color, #4D96FF);
+  background: color-mix(in srgb, var(--level-color, #4D96FF) 10%, transparent);
+  padding: 1.2rem 1rem;
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  color: var(--app-text, #2C3E50);
+}
+
+.phonzy-level-card:not(:disabled):hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+}
+
+.phonzy-level-card.locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+
+.phonzy-level-icon {
+  font-size: 2.2rem;
+}
+
+.phonzy-level-card h3 {
+  margin: 0;
+}
+
+.phonzy-level-card p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #6b7a8f;
+}
+
+.phonzy-level-count {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--level-color, #4D96FF);
+}
+
+.phonzy-level-best {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-top: 0.4rem;
+}
+
+.phonzy-level-best-empty {
+  color: #9aa5b1;
+  font-weight: 500;
+}
+
+/* ---------- Game screen ---------- */
+
+.phonzy-game {
+  width: 100%;
+  gap: 0.8rem;
+}
+
+.phonzy-game-topbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.phonzy-quit-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+}
+
+.phonzy-hearts {
+  display: flex;
+  gap: 0.25rem;
+  font-size: 1.3rem;
+}
+
+.phonzy-heart.lost {
+  filter: grayscale(1);
+  opacity: 0.35;
+}
+
+.phonzy-streak {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #FF6B6B;
+}
+
+.phonzy-progress-bar {
+  width: 100%;
+  height: 0.6rem;
+  border-radius: 999px;
+  background: rgba(77, 150, 255, 0.15);
+  overflow: hidden;
+}
+
+.phonzy-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4D96FF, #2ECC71);
+  transition: width 0.3s ease;
+}
+
+.phonzy-progress-label {
+  margin: -0.4rem 0 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #6b7a8f;
+}
+
+.phonzy-word-card {
+  width: min(100%, 24rem);
+  background: linear-gradient(160deg, rgba(77, 150, 255, 0.1), rgba(155, 89, 182, 0.08));
+  border: 3px solid #4D96FF;
+  border-radius: 1.75rem;
+  padding: 1.6rem;
+  display: grid;
+  gap: 0.4rem;
+  justify-items: center;
+  animation: phonzyPop 0.35s ease-out;
+}
+
+.phonzy-word-icon {
+  font-size: 3.4rem;
+}
+
+.phonzy-word-text {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: lowercase;
+}
+
+.phonzy-word-hint {
+  margin: 0;
+  color: #6b7a8f;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.phonzy-hear-btn {
+  margin-top: 0.4rem;
+}
+
+.phonzy-mic-area {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: center;
+  min-height: 7rem;
+}
+
+.phonzy-mic-btn {
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 50%;
+  border: none;
+  font-size: 2.2rem;
+  cursor: pointer;
+  background: linear-gradient(135deg, #FF6B6B, #FFD700);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(255, 107, 107, 0.4);
+  transition: transform 0.15s ease;
+}
+
+.phonzy-mic-btn:not(:disabled):hover {
+  transform: scale(1.05);
+}
+
+.phonzy-mic-btn-listening {
+  animation: phonzyPulse 1.3s infinite;
+  background: linear-gradient(135deg, #FF6B6B, #E74C3C);
+}
+
+.phonzy-mic-btn-analyzing,
+.phonzy-mic-btn-requesting {
+  animation: phonzySpin 1.4s linear infinite;
+  background: linear-gradient(135deg, #4D96FF, #6C5CE7);
+}
+
+.phonzy-mic-status-text {
+  margin: 0;
+  font-weight: 700;
+  color: #6b7a8f;
+  font-size: 0.85rem;
+}
+
+.phonzy-mic-error-panel {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: center;
+  background: rgba(255, 107, 107, 0.1);
+  border: 2px solid #FF6B6B;
+  border-radius: 1rem;
+  padding: 1rem 1.2rem;
+  color: #c0392b;
+  font-weight: 600;
+}
+
+/* ---------- Feedback overlay ---------- */
+
+.phonzy-feedback-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+  padding: 1rem;
+}
+
+.phonzy-feedback-card {
+  width: min(100%, 22rem);
+  background: var(--app-surface, #ffffff);
+  border-radius: 1.75rem;
+  padding: 1.8rem 1.5rem;
+  display: grid;
+  gap: 0.6rem;
+  justify-items: center;
+  text-align: center;
+  animation: phonzyPop 0.3s ease-out;
+  border: 4px solid #4D96FF;
+  color: var(--app-text, #2C3E50);
+}
+
+.phonzy-feedback-excellent { border-color: #2ECC71; }
+.phonzy-feedback-good { border-color: #4D96FF; }
+.phonzy-feedback-needs-improvement { border-color: #FFD700; }
+.phonzy-feedback-incorrect { border-color: #FF6B6B; }
+
+.phonzy-feedback-score-ring {
+  width: 6.5rem;
+  height: 6.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  font-weight: 900;
+  background: conic-gradient(#2ECC71 var(--score-pct, 0%), rgba(150, 150, 150, 0.15) 0);
+}
+
+.phonzy-feedback-score-ring span {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: var(--app-surface, #ffffff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phonzy-feedback-card h3 {
+  margin: 0;
+}
+
+.phonzy-feedback-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7a8f;
+}
+
+.phonzy-feedback-actions {
+  margin-top: 0.4rem;
+}
+
+.phonzy-backend-check {
+  font-size: 0.75rem !important;
+  font-weight: 700;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(77, 150, 255, 0.1);
+  color: #4D96FF !important;
+  display: inline-block;
+}
+
+.phonzy-backend-check-done {
+  background: rgba(46, 204, 113, 0.12);
+  color: #2ECC71 !important;
+}
+
+.phonzy-backend-check-unavailable {
+  background: rgba(255, 107, 107, 0.1);
+  color: #FF6B6B !important;
+}
+
+.phonzy-gameover-note {
+  font-weight: 700;
+  color: #FF6B6B;
+}
+
+/* ---------- Results ---------- */
+
+.phonzy-results-banner {
+  font-size: 3.5rem;
+}
+
+.phonzy-results h1 {
+  margin: 0;
+}
+
+.phonzy-results-level {
+  margin: -0.6rem 0 0;
+  font-weight: 700;
+  color: #6b7a8f;
+}
+
+.phonzy-stars {
+  font-size: 2rem;
+  color: #d7e3f4;
+}
+
+.phonzy-star.filled {
+  color: #FFD700;
+}
+
+.phonzy-results-grid {
+  width: min(100%, 26rem);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.phonzy-results-stat {
+  background: rgba(77, 150, 255, 0.08);
+  border: 2px solid rgba(77, 150, 255, 0.25);
+  border-radius: 1rem;
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.phonzy-results-stat span {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #6b7a8f;
+  text-transform: uppercase;
+}
+
+.phonzy-results-stat strong {
+  font-size: 1.3rem;
+}
+
+.phonzy-results-stat-wide {
+  grid-column: 1 / -1;
+}
+
+.phonzy-results-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+/* ---------- Progress / leaderboard ---------- */
+
+.phonzy-total-score-pill {
+  align-items: center;
+}
+
+.phonzy-section-title {
+  width: 100%;
+  text-align: left;
+  margin: 0.4rem 0 0;
+}
+
+.phonzy-progress-levels {
+  width: 100%;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.phonzy-progress-level-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border: 2px solid var(--level-color, #4D96FF);
+  background: color-mix(in srgb, var(--level-color, #4D96FF) 8%, transparent);
+  border-radius: 1rem;
+  padding: 0.6rem 0.9rem;
+  text-align: left;
+}
+
+.phonzy-progress-level-icon {
+  font-size: 1.6rem;
+}
+
+.phonzy-progress-level-info {
+  display: grid;
+  gap: 0.1rem;
+  flex: 1;
+}
+
+.phonzy-progress-level-info span {
+  font-size: 0.78rem;
+  color: #6b7a8f;
+}
+
+.phonzy-progress-level-stars {
+  color: #FFD700;
+  font-weight: 700;
+}
+
+.phonzy-empty-note {
+  color: #6b7a8f;
+  font-style: italic;
+}
+
+.phonzy-leaderboard {
+  width: 100%;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.phonzy-leaderboard-row {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr auto auto auto;
+  gap: 0.6rem;
+  align-items: center;
+  background: rgba(255, 215, 0, 0.08);
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.phonzy-leaderboard-rank {
+  font-weight: 900;
+  color: #4D96FF;
+}
+
+.phonzy-leaderboard-date {
+  color: #9aa5b1;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 640px) {
+  .phonzy-detail {
+    padding: 1.2rem;
+    border-radius: 1.25rem;
+  }
+
+  .phonzy-title {
+    font-size: 2rem;
+  }
+
+  .phonzy-results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .phonzy-leaderboard-row {
+    grid-template-columns: 2rem 1fr auto;
+  }
+
+  .phonzy-leaderboard-accuracy,
+  .phonzy-leaderboard-date {
+    display: none;
+  }
+
+  .phonzy-mic-btn {
+    width: 4.6rem;
+    height: 4.6rem;
+    font-size: 1.8rem;
+  }
+}
