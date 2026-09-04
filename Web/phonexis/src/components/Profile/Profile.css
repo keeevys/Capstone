@@ -94,6 +94,7 @@
   margin: 0.3rem 0 0;
   font-size: 0.95rem;
   opacity: 0.9;
+    color: #ff6b6b;
 }
 
 .profile-tabs {
@@ -322,6 +323,210 @@
   color: #ff6b6b;
   font-size: 0.95rem;
   font-weight: 700;
+}
+
+.profile-microphone-tester {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1.15rem;
+  border: 1px solid rgba(77, 150, 255, 0.2);
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(232, 248, 243, 0.9));
+  box-shadow: 0 8px 20px rgba(9, 54, 77, 0.08);
+}
+
+.profile-microphone-meter-wrap {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.profile-microphone-meter {
+  display: grid;
+  grid-template-columns: repeat(40, minmax(0, 1fr));
+  gap: 0.25rem;
+  height: 1.25rem;
+  align-items: center;
+  padding: 0.35rem;
+  border: 1px solid rgba(77, 150, 255, 0.16);
+  border-radius: 0.65rem;
+  background: rgba(22, 67, 90, 0.08);
+}
+
+.profile-microphone-meter span {
+  height: 100%;
+  border-radius: 0.2rem;
+  background: rgba(22, 67, 90, 0.18);
+  transition: background-color 100ms ease, transform 100ms ease;
+}
+
+.profile-microphone-meter span.active {
+  background: linear-gradient(180deg, #52c7a8, #4d96ff);
+  transform: scaleY(1.08);
+}
+
+.profile-microphone-value {
+  color: #16435a;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.profile-microphone-status {
+  min-height: 1.2rem;
+  color: #6a748a;
+  font-size: 0.8rem;
+}
+
+.profile-microphone-status-active {
+  color: #20856b;
+}
+
+.profile-microphone-status-error {
+  color: #c04444;
+}
+
+.profile-microphone-btn {
+  appearance: none;
+  border: 0;
+  border-radius: 0.65rem;
+  padding: 0.7rem 1rem;
+  background: linear-gradient(135deg, #ff6b6b, #f39c5a);
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 5px 12px rgba(255, 107, 107, 0.2);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.profile-microphone-btn:hover:not(:disabled),
+.profile-microphone-btn:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(255, 107, 107, 0.28);
+  outline: none;
+}
+
+.profile-microphone-btn:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+@media (max-width: 600px) {
+  .profile-microphone-btn {
+    width: fit-content;
+  }
+}
+
+.profile-voice-settings {
+  display: grid;
+  gap: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(122, 142, 185, 0.16);
+}
+
+.profile-voice-settings-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.profile-voice-settings-title h4 {
+  margin: 0;
+  color: #2c3141;
+  font-size: 1rem;
+}
+
+.profile-voice-settings-title p {
+  margin: 0.2rem 0 0;
+  color: #6a748a;
+  font-size: 0.82rem;
+}
+
+.profile-voice-modes {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.profile-voice-mode {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 0.7rem;
+  cursor: pointer;
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+
+.profile-voice-mode:hover,
+.profile-voice-mode.active {
+  border-color: rgba(77, 150, 255, 0.25);
+  background: rgba(77, 150, 255, 0.07);
+}
+
+.profile-voice-mode input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.profile-voice-radio {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: 0 0 auto;
+  margin-top: 0.1rem;
+  border: 2px solid #aeb8c8;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.profile-voice-mode.active .profile-voice-radio {
+  border: 5px solid #4d96ff;
+}
+
+.profile-voice-mode strong,
+.profile-voice-mode small {
+  display: block;
+}
+
+.profile-voice-mode strong {
+  color: #2c3141;
+  font-size: 0.9rem;
+}
+
+.profile-voice-mode small {
+  margin-top: 0.18rem;
+  color: #6a748a;
+  font-size: 0.78rem;
+}
+
+.profile-voice-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.profile-voice-options select {
+  width: 100%;
+  min-height: 2.5rem;
+  border: 1px solid #c7cdd9;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  background: #ffffff;
+  color: #2c3141;
+  font: inherit;
+}
+
+.profile-voice-options input[type='range'] {
+  width: 100%;
+  accent-color: #4d96ff;
+}
+
+@media (max-width: 600px) {
+  .profile-voice-options {
+    grid-template-columns: 1fr;
+  }
 }
 
 .profile-theme-options {
