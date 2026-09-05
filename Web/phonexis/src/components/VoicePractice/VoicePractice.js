@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useVoiceRecorder } from '../../lib/useVoiceRecorder';
-import { startPronunciationCheck } from '../../lib/pronunciationChecker';
+import { startPronunciationSession } from '../../lib/pronunciationChecker';
 import './VoicePractice.css';
 
 /**
@@ -24,8 +24,13 @@ export default function VoicePractice({
   const [feedback, setFeedback] = useState('');
   const [recordingTime, setRecordingTime] = useState(0);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const pronunciationSessionRef = useRef(null);
   const { isRecording, startRecording, stopRecording, resetRecording, error: recorderError } =
     useVoiceRecorder();
+
+  useEffect(() => () => {
+    pronunciationSessionRef.current?.stop();
+  }, []);
 
   const playPronunciationGuide = useCallback(() => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
@@ -72,7 +77,7 @@ export default function VoicePractice({
     if (!isRecording) return;
 
     const interval = setInterval(() => {
-      setRecordingTime((prev) => prev + 1);
+      setRecordingTime((prev) => prev + 100);
     }, 100);
 
     return () => clearInterval(interval);
@@ -81,36 +86,42 @@ export default function VoicePractice({
   const handleStartRecording = async () => {
     setRecordingTime(0);
     setResult(null);
-    setFeedback('Recording... Speak now!');
-    await startRecording();
+    setFeedback('Listening... Speak now!');
+    let savedSettings = {};
+    try {
+      savedSettings = JSON.parse(localStorage.getItem('phonexis_voice_settings') || '{}');
+    } catch (storageError) {
+      // use the component defaults when settings are unavailable
+    }
+    const voiceMode = savedSettings.mode || 'isolation';
+    const microphoneSensitivity = Number(savedSettings.sensitivity) || 60;
+    await startRecording({
+      audio: {
+        noiseSuppression: voiceMode === 'isolation' ? { ideal: true } : false,
+        echoCancellation: voiceMode !== 'studio',
+        autoGainControl: voiceMode !== 'isolation' && microphoneSensitivity >= 60,
+        volume: microphoneSensitivity / 100,
+      },
+    });
+    pronunciationSessionRef.current = startPronunciationSession(targetWord, language);
   };
 
   const handleStopRecording = async () => {
     stopRecording();
-
-    // Small delay to ensure audio is fully captured
-    setTimeout(() => {
-      checkPronunciation();
-    }, 100);
-  };
-
-  const checkPronunciation = async () => {
     setIsChecking(true);
-    setFeedback('Checking pronunciation...');
-
+    setFeedback('Analyzing your voice...');
+    pronunciationSessionRef.current?.stop();
     try {
-      const checkResult = await startPronunciationCheck(targetWord, language);
+      const checkResult = await pronunciationSessionRef.current?.promise;
       setResult(checkResult);
       setFeedback(checkResult.feedback);
-
-      if (typeof onResult === 'function') {
-        onResult(checkResult);
-      }
+      if (typeof onResult === 'function') onResult(checkResult);
     } catch (err) {
       const errorMsg = err.message || 'Could not check pronunciation. Please try again.';
       setFeedback(errorMsg);
-      setResult({ success: false, error: errorMsg });
+      setResult({ success: false, accuracy: 0, recognized: '', target: targetWord.toLowerCase(), error: errorMsg });
     } finally {
+      pronunciationSessionRef.current = null;
       setIsChecking(false);
     }
   };

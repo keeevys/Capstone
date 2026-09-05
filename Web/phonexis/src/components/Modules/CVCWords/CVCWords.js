@@ -241,8 +241,6 @@ export default function CVCWords({ onComplete, initialVideosWatched = [], onVide
     setVideosWatched(Array.isArray(initialVideosWatched) ? initialVideosWatched : []);
   }, [initialVideosWatched]);
 
-  const allVideosWatched = videosWatched.length === videos.length;
-
   useEffect(() => {
     setActiveType(initialType);
   }, [initialType]);
