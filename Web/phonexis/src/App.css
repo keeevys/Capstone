@@ -12,8 +12,10 @@
 }
 
 .app-shell-authenticated {
+  overflow: visible;
   background: #ffffff;
   color: #2C3E50;
+  backdrop-filter: none;
 }
 
 .app-authenticated-content {

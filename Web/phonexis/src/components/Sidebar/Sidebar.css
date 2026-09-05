@@ -10,6 +10,9 @@
   --sidebar-danger: #ffb1b1;
   position: fixed;
   inset: 0 auto 0 0;
+  height: 100vh;
+  max-height: 100dvh;
+  overflow: hidden;
   z-index: 20;
   display: flex;
   flex-direction: column;
@@ -121,7 +124,7 @@
 .sidebar-logout:hover { color: var(--sidebar-text); }
 
 @media (max-width: 760px) {
-  .app-sidebar { position: relative; width: 100%; min-height: auto; padding: 0.8rem; }
+  .app-sidebar { width: 100%; padding: 0.8rem; }
   .app-sidebar.sidebar-hidden { display: none; }
   .sidebar-toggle { top: 0.75rem; left: auto; right: 0.75rem; }
   .sidebar-brand { padding-bottom: 0.8rem; }
