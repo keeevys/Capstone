@@ -106,6 +106,11 @@ public class ProgressService {
 		if (request.pretestCompleted() != null) {
 			progress.setPretestCompleted(request.pretestCompleted());
 		}
+		if (request.videosWatched() != null) {
+			Set<Integer> uniqueVideoIds = new LinkedHashSet<>(request.videosWatched());
+			String videosJson = "[" + String.join(",", uniqueVideoIds.stream().map(String::valueOf).toList()) + "]";
+			progress.setVideosWatched(videosJson);
+		}
 
 		// Calculate completion percentage for alphabet (needs all 3 modes completed)
 		if ("alphabet".equalsIgnoreCase(moduleName)) {

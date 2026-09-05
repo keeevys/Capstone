@@ -704,6 +704,63 @@
   background: rgba(232, 241, 246, 0.28);
 }
 
+[data-theme='dark'] .profile-voice-settings-title h4,
+[data-theme='dark'] .profile-voice-mode strong,
+[data-theme='dark'] .profile-form-label,
+[data-theme='dark'] .profile-microphone-value {
+  color: #edf6f9;
+}
+
+[data-theme='dark'] .profile-microphone-tester {
+  border-color: rgba(122, 151, 178, 0.45);
+  background: linear-gradient(135deg, rgba(39, 54, 67, 0.95), rgba(47, 64, 79, 0.95));
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme='dark'] .profile-microphone-meter {
+  border-color: rgba(122, 151, 178, 0.4);
+  background: rgba(10, 24, 32, 0.5);
+}
+
+[data-theme='dark'] .profile-microphone-meter span {
+  background: rgba(200, 216, 222, 0.2);
+}
+
+[data-theme='dark'] .profile-microphone-btn {
+  background: linear-gradient(135deg, #d95d66, #c97c4f);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme='dark'] .profile-microphone-btn:hover:not(:disabled),
+[data-theme='dark'] .profile-microphone-btn:focus-visible {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme='dark'] .profile-voice-settings-title p,
+[data-theme='dark'] .profile-voice-mode small,
+[data-theme='dark'] .profile-microphone-status {
+  color: #c8d8de;
+}
+
+[data-theme='dark'] .profile-microphone-status-active {
+  color: #91f6d5;
+}
+
+[data-theme='dark'] .profile-microphone-status-error {
+  color: #ff9f9f;
+}
+
+[data-theme='dark'] .profile-voice-radio {
+  border-color: #8fa5b3;
+  background: #263744;
+}
+
+[data-theme='dark'] .profile-voice-options select {
+  border-color: #4f6672;
+  background: #263744;
+  color: #edf6f9;
+}
+
 .profile-password-form {
   display: grid;
   gap: 1.2rem;
