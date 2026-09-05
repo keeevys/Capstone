@@ -201,6 +201,14 @@ export default function Consonants({ onComplete, onBack, initialVideosWatched = 
     setCurrentVideoIndex(null);
   };
 
+  const handlePreviousVideo = () => {
+    setCurrentVideoIndex((index) => (index > 0 ? index - 1 : index));
+  };
+
+  const handleNextVideo = () => {
+    setCurrentVideoIndex((index) => (index < videos.length - 1 ? index + 1 : index));
+  };
+
   const handleVideoEnd = (videoId) => {
     handleVideoWatched(videoId);
   };
@@ -287,6 +295,27 @@ export default function Consonants({ onComplete, onBack, initialVideosWatched = 
                       ✓ The video will be marked as watched once you finish watching it completely.
                     </p>
                   </div>
+                </div>
+                <div className="video-navigation" aria-label="Video navigation">
+                  <button
+                    type="button"
+                    className="video-navigation-btn"
+                    onClick={handlePreviousVideo}
+                    disabled={currentVideoIndex === 0}
+                  >
+                    ← Previous Video
+                  </button>
+                  <span className="video-navigation-status">
+                    Video {currentVideoIndex + 1} of {videos.length}
+                  </span>
+                  <button
+                    type="button"
+                    className="video-navigation-btn"
+                    onClick={handleNextVideo}
+                    disabled={currentVideoIndex === videos.length - 1}
+                  >
+                    Next Video →
+                  </button>
                 </div>
               </div>
             </div>
