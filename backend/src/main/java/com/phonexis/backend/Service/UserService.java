@@ -194,7 +194,7 @@ public class UserService {
 	public void verifyDevice(String email, String deviceId) {
 		User user = getUserByEmail(email);
 		if (!deviceMatches(user, deviceId)) {
-			throw new ResponseStatusException(HttpStatus.CONFLICT, "Account is already signed in");
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "Account is already signed in on another device");
 		}
 	}
 
